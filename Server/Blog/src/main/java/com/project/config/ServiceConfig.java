@@ -1,0 +1,28 @@
+package com.project.config;
+
+import com.project.service.BoardService;
+import com.project.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+import javax.sql.DataSource;
+
+
+@Configuration
+@Import(DBConfig.class)
+public class ServiceConfig {
+    @Autowired
+    DataSource dataSource;
+
+    @Bean
+    public CategoryService categoryService(){
+        return new CategoryService(dataSource);
+    }
+
+    @Bean
+    public BoardService boardService(){
+        return new BoardService(dataSource);
+    }
+}

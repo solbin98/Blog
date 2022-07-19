@@ -1,0 +1,115 @@
+.RootDiv{
+    display: flex;
+}
+
+.menu-bar{
+    width: 18%;
+    height: 20%;
+    border-right: 0.2px solid lightgray;
+    margin-left: 30px;
+}
+
+.blog-title{
+    width: 100%;
+    font-size: 25px;
+    margin-top :25px;
+    padding-left: 25px;
+}
+
+.category{
+    font-size: 18px;
+    margin-top :15px;
+    padding-left: 25px;
+}
+
+.category:hover {font-weight: bold }
+
+
+.content-side{
+    width: 83%;
+    height: 100%;
+    background-color: #E8E8E8;
+}
+
+.content{
+    width: 90%;
+    background-color: white;
+    border: 0.2px solid lightgray;
+    margin: auto;
+    padding: 15px;
+}
+
+.content:hover{background-color:gainsboro}
+
+.content-side-headline{
+    text-align: center;
+    width: 90%;
+    background-color: lightgray;
+    border: 0.2px solid lightgray;
+    margin: auto;
+    padding: 15px;
+}
+
+.board-headline{
+    width: 100%;
+    display: flex;
+}
+
+.board-headline-title{
+    width: 80%;
+    font-size:25px;
+    margin:0px;
+    padding : 5px;
+}
+
+.board-headline-date{
+    width: 20%;
+    margin:0px;
+    font-size:15px;
+    text-align: right;
+    padding: 15px;
+}
+
+.board-tagline{
+    width: 80%;
+    padding-left: 15px;
+    margin:0px;
+    display: flex;
+}
+
+.board-tagline-tag{
+    margin:9px;
+}
+
+.board-content{
+    width: 70%;
+    margin-top: 35px;
+    align-content: center;
+    padding: 10px;
+}
+
+.page-number-div-outer{
+    width: 100%;
+    margin-bottom: 150px;
+    margin-top:50px;
+    text-align: center;
+}
+
+.page-number-div-inner{
+    display: inline-block;
+}
+
+.page-number{
+    color: black;
+    margin:20px;
+    width: 3%;
+    height: 3%;
+}
+
+.page-next{
+    width: 20px;
+    height: 20px;
+    text-align: center;
+}
+
+
