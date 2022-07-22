@@ -1,7 +1,10 @@
 package com.project.dao;
 
+import com.project.dto.BoardDto;
 import com.project.dto.CategoryDto;
 import com.project.dto.CommentDto;
+import com.project.util.CommentWriterInfo;
+import com.project.util.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,14 +21,12 @@ public class CommentDao {
             CommentDto commentDto = new CommentDto(
                     rs.getInt("comment_id"),
                     rs.getInt("board_id"),
-                    rs.getInt("inner_num"),
                     rs.getInt("depth"),
                     rs.getInt("parent"),
-                    rs.getString("child"),
                     rs.getString("writer"),
                     rs.getString("password"),
                     rs.getString("content"),
-                    rs.getTimestamp("date").toLocalDateTime());
+                    rs.getString("date"));
             return commentDto;
         }
     };
@@ -34,6 +35,16 @@ public class CommentDao {
     @Autowired
     public CommentDao(DataSource dataSource){
         jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    public int selectCountByBoardId(int board_id){
+        Integer ret = jdbcTemplate.queryForObject("select count(*) from Comment where board_id = ?", Integer.class, board_id);
+        return ret;
+    }
+
+    public int selectCountByParent(int parent){
+        Integer ret = jdbcTemplate.queryForObject("select count(*) from Comment where parent = ?", Integer.class, parent);
+        return ret;
     }
 
     public List<CommentDto> selectAll(){
@@ -46,10 +57,31 @@ public class CommentDao {
         return ret;
     }
 
+    public List<CommentDto> selectPaging(PagingVo pagingVo, int board_id){
+        int offset = (pagingVo.getNowPage()-1) * pagingVo.getPerPage();
+        int limits = pagingVo.getPerPage();
+        List<CommentDto> ret = jdbcTemplate.query(
+                "select * from Comment where board_id = ? order by comment_id asc limit ?, ? ",
+                CommentDtoRowMapper,
+                board_id, offset, limits);;
+        return ret;
+    }
+
+    public int selectWriterInfo(CommentWriterInfo commentWriterInfo, int comment_id){
+        Integer result = jdbcTemplate.queryForObject(
+                "select count(*) from Comment where comment_id = ? and writer = ? and password = ?",
+                Integer.class,
+                comment_id, commentWriterInfo.getId(), commentWriterInfo.getPassword());
+        return result;
+    }
+
     public void insert(CommentDto commentDto){
-        jdbcTemplate.update("insert into Comment (?,?,?,?,?,?,?,?,?)",
+        System.out.println("여기까지 왔음 sql : " +
+                "insert into Comment (board_id, depth, parent, writer, password, content, date)" +
+                "values(");
+        jdbcTemplate.update("insert into Comment (board_id, depth, parent, writer, password, content, date) " +
+                        "           values (?,?,?,?,?,?,?)",
                 commentDto.getBoard_id(),
-                commentDto.getInner_num(),
                 commentDto.getDepth(),
                 commentDto.getParent(),
                 commentDto.getWriter(),
@@ -60,9 +92,8 @@ public class CommentDao {
     }
 
     public void update(CommentDto commentDto){
-        jdbcTemplate.update("update Comment set (?,?,?,?,?,?,?,?,?)",
+        jdbcTemplate.update("update Comment set (?,?,?,?,?,?,?)",
                 commentDto.getBoard_id(),
-                commentDto.getInner_num(),
                 commentDto.getDepth(),
                 commentDto.getParent(),
                 commentDto.getWriter(),
@@ -73,6 +104,6 @@ public class CommentDao {
     }
 
     public void delete(int comment_id){
-        jdbcTemplate.update("delete * from Comment where comment_id = " + comment_id, CommentDtoRowMapper);
+        jdbcTemplate.update("delete from Comment where comment_id = " + comment_id);
     }
 }

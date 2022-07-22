@@ -18,7 +18,7 @@ public class BoardService {
     public int getTotal(int category_id){return boardDao.selectCountCategory(category_id);}
     public int getTotal(){return boardDao.selectCount();}
     public List<BoardDto> getAllBoard(){ return boardDao.selectAll();}
-    public List<BoardDto> getBoard(int board_id) { return boardDao.select(board_id); }
+    public BoardDto getBoard(int board_id) { return boardDao.select(board_id); }
     public List<BoardDto> getBoardPaging(PagingVo pagingVo, int category_id) { return boardDao.selectPaging(pagingVo, category_id);}
     public void addBoard(BoardDto boardDto) { boardDao.insert(boardDto);}
     public void updateBoard(BoardDto boardDto) { boardDao.update(boardDto); }

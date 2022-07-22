@@ -1,5 +1,6 @@
 .RootDiv{
     display: flex;
+    background-color: #E8E8E8;
 }
 
 .menu-bar{
@@ -20,7 +21,17 @@
     font-size: 18px;
     margin-top :15px;
     padding-left: 25px;
+    color:black;
 }
+
+.a-color{
+    text-decoration: none;
+    text-decoration-line:none;
+    color: black;
+}
+
+a:hover { text-decoration:none !important }
+a:hover { text-decoration-color:black }
 
 .category:hover {font-weight: bold }
 
@@ -28,15 +39,151 @@
 .content-side{
     width: 83%;
     height: 100%;
-    background-color: #E8E8E8;
 }
 
-.content{
+.board-block{
     width: 90%;
     background-color: white;
     border: 0.2px solid lightgray;
     margin: auto;
     padding: 15px;
+}
+
+.board-block-full{
+    width: 95%;
+    background-color: white;
+    border: 0.2px solid lightgray;
+    margin: auto;
+    padding: 15px;
+}
+
+.comment-side{
+    width: 95%;
+    height: 100%;
+    background-color: white;
+    margin: auto;
+}
+
+.comment-side-headline{
+    border: 0.2px solid lightgray;
+    width: 100%;
+    display: flex;
+    padding: 15px;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.comment-block-outer{
+    display: flex;
+    background-color: #E8E8E8;
+
+}
+
+.comment-block{
+    width: 100%;
+    background-color: white;
+    border-bottom: 0.2px solid lightgray;
+    border-side: 0.2px solid lightgray;
+    padding: 35px;
+}
+
+.comment-block-reply{
+    width: 98%;
+    background-color:#F9F6F3;
+    border-bottom: 0.2px solid lightgray;
+    margin-left: 2%;
+    padding: 35px;
+}
+
+.comment-block-reply-front-block{
+    width: 35px;
+}
+
+.comment-block-reply-front-image{
+    align-content: end;
+    align-self: center;
+    width: 2%;
+    height: 2%;
+}
+
+.comment-content{
+    width: 80%;
+}
+
+.comment-content-outer{
+    width: 100%;
+    display: flex;
+}
+
+.comment-modify-block{
+    width:20%;
+    display: inline-block;
+    text-align: right;
+}
+
+.comment-modify-buttons{
+    width: 30%;
+    margin:1%;
+    background-color: darkgray;
+    font-weight: bold;
+    border: none;
+    border-radius: 7px;
+}
+
+.comment-headline{
+    display: flex;
+}
+
+.comment-headline-text-writer{
+    width: 80%;
+}
+
+.comment-headline-text-date{
+    width: 20%;
+    text-align: right;
+}
+
+.comment-write-block{
+    background-color: white;
+    margin: 2%;
+}
+
+.comment-write-bottom{
+    display: flex;
+}
+
+.comment-write-info{
+    width: 88%;
+    display: flex;
+    padding-left: 0.5%;
+}
+
+.comment-write-content{
+    padding : 2%;
+    width: 98%;
+    margin: 1%;
+    height: 150px;
+    resize:none;
+}
+
+.comment-write-name{
+    width: 15%;
+    margin: 1%;
+}
+.comment-write-password{
+    width: 15%;
+    margin: 1%;
+}
+
+.comment-write-submit-button{
+    width: 7%;
+    margin: auto;
+    display: inline-block;
+    vertical-align: middle;
+    background-color: darkgray;
+    font-weight: bold;
+    border: none;
+    border-radius: 7px;
 }
 
 .content:hover{background-color:gainsboro}
@@ -96,6 +243,10 @@
 }
 
 .page-number-div-inner{
+    display: inline-block;
+}
+
+.page-number-div-list{
     display: inline-block;
 }
 

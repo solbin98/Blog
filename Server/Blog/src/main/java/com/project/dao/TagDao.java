@@ -47,6 +47,6 @@ public class TagDao {
         jdbcTemplate.update("update Tag set(?,?) where tag_id = ?", tag.getTag_id(), tag.getName(), tag.getTag_id());
     }
     public void delete(int tag_id){
-        jdbcTemplate.update("select * from Tag where tag_id = " + tag_id);
+        jdbcTemplate.update("delete from Tag where tag_id = " + tag_id);
     }
 }

@@ -4,23 +4,21 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CommentDto {
     int comment_id;
     int board_id;
-    int inner_num;
     int depth;
     int parent;
     String writer;
     String password;
     String content;
-    @DateTimeFormat(pattern = "yyyyMMddHH")
-    LocalDateTime date;
+    String date;
 
-    public CommentDto(int comment_id, int board_id, int inner_num, int depth, int parent, String child, String writer, String password, String content, LocalDateTime date) {
+    public CommentDto(int comment_id, int board_id, int depth, int parent, String writer, String password, String content, String date) {
         this.comment_id = comment_id;
         this.board_id = board_id;
-        this.inner_num = inner_num;
         this.depth = depth;
         this.parent = parent;
         this.writer = writer;
@@ -40,12 +38,6 @@ public class CommentDto {
     }
     public void setBoard_id(int board_id) {
         this.board_id = board_id;
-    }
-    public int getInner_num() {
-        return inner_num;
-    }
-    public void setInner_num(int inner_num) {
-        this.inner_num = inner_num;
     }
     public int getDepth() {
         return depth;
@@ -77,10 +69,20 @@ public class CommentDto {
     public void setContent(String content) {
         this.content = content;
     }
-    public LocalDateTime getDate() {
-        return date;
-    }
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public String getDate() {return date;}
+    public void setDate(String date) {this.date = date;}
+
+    @Override
+    public String toString() {
+        return "CommentDto{" +
+                "comment_id=" + comment_id +
+                ", board_id=" + board_id +
+                ", depth=" + depth +
+                ", parent=" + parent +
+                ", writer='" + writer + '\'' +
+                ", password='" + password + '\'' +
+                ", content='" + content + '\'' +
+                ", date=" + date +
+                '}';
     }
 }

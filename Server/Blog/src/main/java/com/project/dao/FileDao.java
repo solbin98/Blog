@@ -61,7 +61,7 @@ public class FileDao {
     }
 
     public void delete(int file_id){
-        jdbcTemplate.update("delete * from File where fild_id = "+file_id);
+        jdbcTemplate.update("delete from File where fild_id = "+file_id);
     }
 
 }

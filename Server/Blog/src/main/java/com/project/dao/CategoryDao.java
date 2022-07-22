@@ -73,6 +73,6 @@ public class CategoryDao {
     }
 
     public void delete(int category_id){
-        jdbcTemplate.update("delete * from Category where category_id = " + category_id);
+        jdbcTemplate.update("delete from Category where category_id = " + category_id);
     }
 }

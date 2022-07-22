@@ -35,8 +35,8 @@ public class BoardDao {
         return ret;
     }
 
-    public List<BoardDto> select(int board_id){
-        List<BoardDto> ret = jdbcTemplate.query(
+    public BoardDto select(int board_id){
+        BoardDto ret = jdbcTemplate.queryForObject(
                 "select * from Board where board_id = ?",
                 boardDtoRowMapper,
                 board_id);
@@ -88,6 +88,6 @@ public class BoardDao {
     }
 
     public void delete(int board_id){
-        jdbcTemplate.update("delete * from Board where board_id = " + board_id);
+        jdbcTemplate.update("delete from Board where board_id = " + board_id);
     }
 }

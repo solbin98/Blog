@@ -2,6 +2,7 @@ package com.project.config;
 
 import com.project.service.BoardService;
 import com.project.service.CategoryService;
+import com.project.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,4 +26,7 @@ public class ServiceConfig {
     public BoardService boardService(){
         return new BoardService(dataSource);
     }
+
+    @Bean
+    public CommentService commentService() { return new CommentService(dataSource); }
 }
