@@ -1,8 +1,6 @@
 package com.project.config;
 
-import com.project.service.BoardService;
-import com.project.service.CategoryService;
-import com.project.service.CommentService;
+import com.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,4 +27,14 @@ public class ServiceConfig {
 
     @Bean
     public CommentService commentService() { return new CommentService(dataSource); }
+
+    @Bean
+    public TagService tagService() { return new TagService(dataSource); }
+
+    @Bean
+    public BoardTagService boardTagService() { return new BoardTagService(dataSource); }
+
+    @Bean
+    public FileService fileService() { return new FileService(dataSource); }
+
 }

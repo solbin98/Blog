@@ -1,10 +1,10 @@
 package com.project.util;
 
-public class CommentWriterInfo {
+public class CommentWriterDto {
     String id;
     String password;
 
-    public CommentWriterInfo(String id, String password) {
+    public CommentWriterDto(String id, String password) {
         this.id = id;
         this.password = password;
     }
@@ -13,4 +13,12 @@ public class CommentWriterInfo {
     public void setId(String id) {this.id = id;}
     public String getPassword() {return password;}
     public void setPassword(String password) {this.password = password;}
+
+    @Override
+    public String toString() {
+        return "CommentWriterInfo{" +
+                "id='" + id + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

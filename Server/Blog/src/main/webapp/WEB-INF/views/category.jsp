@@ -7,25 +7,15 @@
     <link href="/resources/myCss.css" rel="stylesheet" type="text/css" />
     <link href="/resources/sidebar.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+    <script src="/resources/js/controller.js"></script>
+    <script src="/resources/js/model.js"></script>
 </head>
 <script src="//code.jquery.com/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
 
-<body>
+<body style="background-color: #E8E8E8">
     <div class="RootDiv">
-        <!-- 사이드 메뉴바 -->
-        <div id="page-wrapper">
-            <div id="sidebar-wrapper">
-                <ul class="sidebar-nav">
-                    <h2 class="blog-title"> solbin98 </h2>
-                    <c:forEach var="category" items="${categories}" varStatus="idx" >
-                        <p class="category">
-                            <a href="/category/${category.category_id}/boards" class="a-color"> ${category.name} (${category.total})</a>
-                        </p>
-                    </c:forEach>
-                </ul>
-            </div>
-        </div>
+        <%@ include file="/resources/html/menuBar.html" %>
 
         <div class="content-side">
             <div class="content-side-headline"> <h3> ${pagingVo.nowPage} 페이지 </h3> </div>
@@ -38,12 +28,15 @@
                             <p class="board-headline-date"> ${board.date} </p>
                         </div>
 
-                        <div class="board-tagline">
-                            <p class="board-tagline-tag"> 수학 </p>
-                            <p class="board-tagline-tag"> 그리디 </p>
-                            <p class="board-tagline-tag"> 아이디어 </p>
+                        <div class="board-tagline" id="board-tagline-${board.board_id}">
+                            <c:forEach var="tagID" items="${tags}">
+                                <c:if test="${tagID.key eq board.board_id}">
+                                    <c:forEach var="tagName" items="${tagID.value}">
+                                        <div class="tag-box"> ${tagName.name}</div>
+                                    </c:forEach>
+                                </c:if>
+                            </c:forEach>
                         </div>
-
                         <div class="board-content">${board.content}</div>
                     </a>
                 </div>
@@ -60,8 +53,8 @@
                         <img src="/resources/png/right.png" class="page-next"></a>
                 </div>
             </div>
-
         </div>
     </div>
 </body>
+
 </html>

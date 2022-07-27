@@ -1,10 +1,8 @@
 package com.project.service;
 
-import com.project.dao.BoardDao;
 import com.project.dao.CommentDao;
-import com.project.dto.BoardDto;
 import com.project.dto.CommentDto;
-import com.project.util.CommentWriterInfo;
+import com.project.util.CommentWriterDto;
 import com.project.util.PagingVo;
 
 import javax.sql.DataSource;
@@ -24,7 +22,7 @@ public class CommentService {
     public int getTotal(int board_id) { return commentDao.selectCountByBoardId(board_id);}
     public List<CommentDto> getAllComment(){ return commentDao.selectAll();}
     public List<CommentDto> getCommentByBoardId(int board_id) { return commentDao.select(board_id); }
-    public int checkCommentWriterInfo(CommentWriterInfo commentWriterInfo, int comment_id) { return commentDao.selectWriterInfo(commentWriterInfo, comment_id);}
+    public int checkCommentWriterInfo(CommentWriterDto commentWriterInfo, int comment_id) { return commentDao.selectWriterInfo(commentWriterInfo, comment_id);}
     public int getCommentCountByParent(int parent) { return commentDao.selectCountByParent(parent); }
     public List<CommentDto> getCommentPaging(PagingVo pagingVo, int board_id) {
         return commentDao.selectPaging(pagingVo, board_id); }

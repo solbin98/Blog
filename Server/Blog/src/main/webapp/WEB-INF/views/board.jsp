@@ -10,22 +10,9 @@
 <script src="//code.jquery.com/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
 
-<body style="background: #E8E8E8">
+<body style="background-color: #E8E8E8">
     <div class="RootDiv">
-        <!-- 사이드 메뉴바 -->
-        <div id="page-wrapper">
-            <div id="sidebar-wrapper">
-                <ul class="sidebar-nav">
-                    <h2 class="blog-title"> solbin98 </h2>
-                    <c:forEach var="category" items="${categories}" varStatus="idx" >
-                        <p class="category">
-                            <a href="/category/${category.category_id}/boards" class="a-color"> ${category.name} (${category.total})</a>
-                        </p>
-                    </c:forEach>
-                </ul>
-            </div>
-        </div>
-
+        <%@ include file="/resources/html/menuBar.html" %>
 
         <div class="content-side">
             <div class="board-block-full">
@@ -34,10 +21,10 @@
                     <p class="board-headline-date"> ${board.date} </p>
                 </div>
 
-                <div class="board-tagline">
-                    <p class="board-tagline-tag"> 수학 </p>
-                    <p class="board-tagline-tag"> 그리디 </p>
-                    <p class="board-tagline-tag"> 아이디어 </p>
+                <div class="board-tagline" id = "board-tagline">
+                    <c:forEach var="tag" items="${tags}">
+                        <div class="tag-box">${tag.name}</div>
+                    </c:forEach>
                 </div>
 
                 <div class="board-content">${board.content}</div>
@@ -47,6 +34,7 @@
                 <div class="comment-side-headline" id="comment-count"> 댓글 (${commentTotal}) </div>
 
                 <!-- 동적으로 댓글 블록들이 추가되는 곳 -->
+
                 <div id="comment-block-list">
 
                 </div>
@@ -69,7 +57,7 @@
                             <input type="text" class="comment-write-name" placeholder="아이디" id="comment-writer-name">  </input>
                             <input type="password" class="comment-write-password" placeholder="비밀번호" id="comment-writer-password">  </input>
                         </div>
-                        <input class="comment-write-submit-button"  value="댓글 작성" id="comment-submit"> </input>
+                        <button class="comment-write-submit-button" id="comment-submit" onclick="commentSubmit(0)"> 댓글 작성 </button>
                     </div>
                 </div>
             </div>
@@ -77,73 +65,24 @@
 
     </div>
 </body>
-
+<%@ include file="/resources/jsp/request.jsp" %>
 <script>
     let pagingVo;
+    let currentUpdatingBlockHidden;
+    let deleteWindow;
     // 초기화 코드
-    loadPage(1); // 댓글을 페이징으로 불러오는 함수 (인자 : page)
-
-    $("#comment-submit").click(function(){
-        var today = new Date();
-        var year = today.getFullYear();
-        var month = ('0' + (today.getMonth() + 1)).slice(-2);
-        var day = ('0' + today.getDate()).slice(-2);
-        var dateString = year + '-' + month  + '-' + day;
-
-        const paramsForCommentWrite = {
-            comment_id: 0
-            , board_id: ${board.board_id}
-            , depth: 1
-            , parent: 0
-            , writer: $("#comment-writer-name").val()
-            , password: $("#comment-writer-password").val()
-            , content: $("#comment-content").val()
-            , date : dateString
-        };
-
-        console.log(paramsForCommentWrite)
-        // 댓글 작성을 위한 로직
-        $.ajax({
-            type : "POST",
-            url : "/boards/" + ${board.board_id} + "/comment",
-            data : paramsForCommentWrite,
-            success : function(res){
-                document.getElementById("comment-write-block").scrollIntoView();
-                updatePagingVo(res.pagingVo);
-                loadComments(res.comments);
-            },
-            error : function(XMLHttpRequest, textStatus, errorThrown){
-                alert("통신 실패.")
-            }
-        });
-    });
-
-    function loadPage(pageNumber){
-        // 댓글 조회를 위한 로직
-        $.ajax({
-            type : "GET",
-            url : "/boards/" + ${board.board_id} + "/comment?page=" + pageNumber,
-            success : function(res){
-                document.getElementById("comment-count").scrollIntoView();
-                updatePagingVo(res.pagingVo);
-                loadComments(res.comments);
-            },
-            error : function(XMLHttpRequest, textStatus, errorThrown){
-                alert("페이지 로딩에 실패하였습니다.")
-            }
-        });
-    }
+    loadComment(1); // 댓글을 페이징으로 불러오는 함수 (인자 : page)
 
     function moveToNextPage(){
         if(pagingVo.nowPage+1 <= pagingVo.lastPage){
-            loadPage(pagingVo.nowPage+1);
+            loadComment(pagingVo.nowPage+1);
             resetPageNumbers();
         }
     }
 
     function moveToPrevPage(){
         if(pagingVo.nowPage-1 > 0){
-            loadPage(pagingVo.nowPage-1);
+            loadComment(pagingVo.nowPage-1);
             resetPageNumbers();
         }
     }
@@ -160,7 +99,7 @@
             let newNumber = document.createElement("a");
             newNumber.className = "page-number";
             newNumber.textContent = i;
-            newNumber.setAttribute("onclick", "loadPage("+i+")")
+            newNumber.setAttribute("onclick", "loadComment("+i+")")
             pageNumberList.appendChild(newNumber);
         }
     }
@@ -174,13 +113,15 @@
     }
 
     function addCommentElement(commentListArray,tree) {
+        let elementID = 1;
+        console.log(JSON.stringify(tree));
         // empty-parent가 존재하는 경우에 대한 처리.
         if(tree.hasOwnProperty("empty_parent")){
             let parentID = tree["empty_parent"];
             let arrSize = tree[parentID].length;
             for(let j=0;j<arrSize;j++){
                 let nowIdx = tree[parentID][j];
-                createElement(commentListArray, nowIdx);
+                createElement(commentListArray, nowIdx, elementID++);
             }
         }
 
@@ -192,12 +133,105 @@
             for(let j=0;j<arrSize;j++) {
                 let nowIdx = tree[parentID][j]; // nowIdx -> 현재 가르키는 원소의 commentListArray 에서의 인덱스
                 if (commentListArray[nowIdx].parent ==  tree["empty_parent"]) continue;
-                createElement(commentListArray, nowIdx);
+                createElement(commentListArray[nowIdx], elementID++);
             }
         }
     }
 
-    function createElement(commentListArray, nowIdx){
+    function cancelModify(type){
+        if(type == "reply"){
+            let prev = document.getElementById("comment-write-block-reply");
+            if(prev != null) {
+                document.getElementById("comment-block-reply-front-image-reply").remove();
+                prev.remove();
+            }
+        }
+        else if(type == "update"){
+            let prev = document.getElementById("comment-write-block-update");
+            if(prev != null) {
+                document.getElementById("comment-write-block-update").remove();
+                if(document.getElementById("comment-block-reply-front-image-update") != null)
+                    document.getElementById("comment-block-reply-front-image-update").remove();
+                let current_block = currentUpdatingBlockHidden;
+                if(current_block != null) {
+                    let children = current_block.childNodes;
+                    for (let i = 0; i < current_block.childElementCount; i++) {
+                        let child = children[i];
+                        child.hidden = false;
+                    }
+                }
+            }
+        }
+    }
+
+    function createWriteCommentBlock(comment_id, parent_id, parent_html_id, type){
+        cancelModify(type);
+
+        let commentBlockOuter = document.createElement("div");
+        let innerHTML = "";
+
+        if(type == "reply") {
+            commentBlockOuter.className = "comment-block-outer";
+            if(parent_id == 0) parent_id = comment_id;
+            innerHTML += "<img class='comment-block-reply-front-image' id='comment-block-reply-front-image-reply' src= '/resources/png/right-and-down.png' /img>";
+            innerHTML += "<div class='comment-block-reply' id='comment-write-block-reply'>";
+            innerHTML += "<h4 class = 'comment-headline-text-writer'> 답글 추가 하기 </h4>";
+            innerHTML += "<textarea class='comment-write-content' placeholder='댓글 내용을 작성해주세요' id='comment-content-reply'></textarea>"
+            innerHTML += "<div class='comment-write-bottom'>"
+                        + "<div class='comment-write-info'>"
+                        + "<input type='text' class='comment-write-name' placeholder='아이디' id='comment-writer-name-reply'> </input>"
+                        + "<input type='password' class='comment-write-password' placeholder='비밀번호' id='comment-writer-password-reply'>  </input>"
+                        + "</div>"
+                        + "<button class='comment-write-submit-button' id='comment-submit-reply-cancel'> 취소 </button>"
+            innerHTML +=  "<button class='comment-write-submit-button' id='comment-submit-reply' onclick='commentSubmit(" + parent_id + ")'> 답글작성 </button>";
+        }
+        else if(type == "update"){
+            commentBlockOuter.className = "comment-block-update";
+            commentBlockOuter.id = "comment-write-block-update";
+
+            let parentBlockId = document.getElementById("comment-headline-text-writer-" + parent_html_id).textContent;
+            let parentBlockContent = document.getElementById("comment-content-" + parent_html_id).textContent;
+
+            if(parent_id != 0) {
+                innerHTML += "<img class='comment-block-reply-front-image' id='comment-block-reply-front-image-update' src= '/resources/png/right-and-down.png' /img>";
+                innerHTML += "<div class='comment-block-reply'>";
+            }
+            else innerHTML += "<div class='comment-block'>";
+            innerHTML += "<h4 class = 'comment-headline-text-writer'> 댓글 수정 하기 </h4>";
+            innerHTML += "<textarea class='comment-write-content' placeholder='댓글 내용을 작성해주세요' id='comment-content-update' >"+parentBlockContent+"</textarea>"
+            innerHTML += "<div class='comment-write-bottom'>"
+                + "<div class='comment-write-info'>"
+                + "<input type='text' class='comment-write-name' placeholder='아이디' id='comment-writer-name-update' value = " + parentBlockId +">  </input>"
+                + "<input type='password' class='comment-write-password' placeholder='비밀번호' id='comment-writer-password-update'>  </input>"
+                + "</div>"
+                + "<button class='comment-write-submit-button' id='comment-submit-update-cancel'> 취소 </button>"
+            innerHTML +=  "<button class='comment-write-submit-button' id='comment-submit-update'> 댓글수정 </button>";
+        }
+        innerHTML += "</div>" + "</div>" + "</div>"
+
+        commentBlockOuter.innerHTML = innerHTML;
+        let commentBlockList = document.getElementById("comment-block-list");
+        if(type == "update"){
+
+            let current_block = document.getElementById("comment-block-outer-" + (parent_html_id));
+            let children = current_block.childNodes;
+            for(let i=0; i<current_block.childElementCount;i++){
+                let child = children[i];
+                child.hidden = true;
+            }
+            current_block.appendChild(commentBlockOuter);
+            currentUpdatingBlockHidden = current_block;
+            document.getElementById("comment-submit-update").onclick = function(){ updateComment(comment_id); }
+            document.getElementById("comment-submit-update-cancel").onclick = function(){ cancelModify(type) }
+        }
+        else{
+            let nextBlock = document.getElementById("comment-block-outer-" + (parent_html_id+1));
+            commentBlockList.insertBefore(commentBlockOuter, nextBlock);
+            document.getElementById("comment-submit-reply-cancel").onclick = function(){ cancelModify(type) }
+        }
+    }
+
+    function createElement(comment, elementID){
         let commentBlockList = document.getElementById("comment-block-list");
 
         let commentBlockOuter = document.createElement("div");
@@ -214,8 +248,8 @@
 
 
         commentBlockOuter.className = "comment-block-outer"
-        //css 적용을 위해 클래스 부여
-        if(commentListArray[nowIdx].parent != 0) {
+        //답글의 경우, 왼쪽에 화살표 이미지 삽입하는 코드
+        if(comment.parent != 0) {
             commentBlock.className = "comment-block-reply";
             // comment block 왼쪽에 공백 삽입
             let imageBlock = document.createElement("img");
@@ -223,12 +257,10 @@
             imageBlock.src="/resources/png/right-and-down.png";
             imageBlock.className = "comment-block-reply-front-image";
             commentBlockFront.className = "comment-block-reply-front";
-            //commentBlockFront.appendChild(imageBlock);
             commentBlockOuter.appendChild(imageBlock);
         }
-        else {
-            commentBlock.className = "comment-block";
-        }
+        else commentBlock.className = "comment-block";
+
         commentHeadline.className = "comment-headline";
         commentHeadlineTextWriter.className = "comment-headline-text-writer";
         commentHeadlineTextDate.className = "comment-headline-text-date";
@@ -242,14 +274,19 @@
         commentModifyButton2.textContent = "삭제";
         commentModifyButton3.textContent = "답글";
 
-        commentModifyButton1.setAttribute("onclick", "updateComment("+commentListArray[nowIdx].comment_id+")");
-        commentModifyButton2.setAttribute("onclick", "deleteComment("+commentListArray[nowIdx].comment_id+")");
-        commentModifyButton3.setAttribute("onclick", "deleteComment("+commentListArray[nowIdx].comment_id+")");
+        commentModifyButton1.onclick = function() { createWriteCommentBlock(comment.comment_id, comment.parent, elementID, "update")};
+        commentModifyButton2.onclick = function() { openDeleteCommentWindow(comment.comment_id, comment.writer)};
+        commentModifyButton3.onclick = function () { createWriteCommentBlock(comment.comment_id, comment.parent, elementID, "reply") }
 
         //엘리먼트 간의 계층 관계 설정
-        commentHeadlineTextWriter.textContent = commentListArray[nowIdx].writer
-        commentHeadlineTextDate.textContent = commentListArray[nowIdx].date
-        commentContent.textContent = commentListArray[nowIdx].content
+        commentHeadlineTextWriter.textContent = comment.writer
+        commentHeadlineTextDate.textContent = comment.date
+        commentContent.textContent = comment.content
+
+        //id를 설정해주기
+        commentBlockOuter.id = "comment-block-outer-" + elementID;
+        commentHeadlineTextWriter.id = "comment-headline-text-writer-" + elementID;
+        commentContent.id = "comment-content-" + elementID;
 
         //삽입
         commentHeadline.appendChild(commentHeadlineTextWriter);
@@ -262,6 +299,7 @@
         commentContentOuter.appendChild(commentModifyBlock);
         commentBlock.appendChild(commentContentOuter)
         commentBlockOuter.appendChild(commentBlock);
+
         //댓글 리스트 div 에 추가
         commentBlockList.appendChild(commentBlockOuter);
     }
@@ -281,7 +319,6 @@
                 else tree[parent].push(i);
             }
         }
-        console.log("tree 구조 : " + JSON.stringify(tree));
         return tree;
     }
 
@@ -296,86 +333,24 @@
         resetPageNumbers();
     }
 
-    function checkWriterInfo(comment_id, id, pass, win){
-        let result = 0;
-        console.log("전달된 아이디 : " + id, " 비번 : ", pass);
-        let paramsForChecking = { id : id ,password : pass };
-        $.ajax({
-            type : "POST",
-            data : paramsForChecking,
-            url : "/comment/"+comment_id+"/writerInfo",
-            success : function(res){
-                if(res.checkResult == 1) {
-                    console.log(result + "출력해보리기2");
-                    $.ajax({
-                        type : "DELETE",
-                        url : "/boards/" + ${board.board_id} + "/comment/" + comment_id + "?page=" + pagingVo.nowPage,
-                        success : function(res){
-                            updatePagingVo(res.pagingVo);
-                            loadComments(res.comments);
-                            alert("댓글이 삭제되었습니다.")
-                        },
-                        error : function(XMLHttpRequest, textStatus, errorThrown){
-                            alert("댓글을 삭제에 실패하였습니다.")
-                        }
-                    });
-                }
-                else window.alert("비밀번호나 아이디가 잘못되었습니다.");
-            },
-            error : function(XMLHttpRequest, textStatus, errorThrown){
-                win.alert("정보 체크에 실패하였습니다.")
-                win.close();
-            }
-        });
+    function openDeleteCommentWindow(comment_id, writer){
+        console.log(comment_id + " , " + writer);
 
-        win.close();
-    }
-
-    function close(win){
-        win.close();
-    }
-
-    function deleteComment(comment_id){
-        let win = window.open("", "댓글 삭제", "width=500,height=150");
-        win.document.write(
-            "<h5> 댓글을 삭제하기 위해서 아이디와 비밀번호를 입력해주세요. </h5> <input type='text' placeholder='아이디' id='id-text'> </input> <input type='password' placeholder='비밀번호' id='password-text'> </input> " +
+        if(deleteWindow != null) deleteWindow.close();
+        deleteWindow = window.open("", "댓글 삭제", "width=500,height=150");
+        deleteWindow.document.write(
+            "<h5> 댓글을 삭제하기 위해서 아이디와 비밀번호를 입력해주세요. </h5> <input type='text' placeholder='아이디' id='id-text' value='"+writer+"' > </input> <input type='password' placeholder='비밀번호' id='password-text'> </input> " +
             "<p> <button id='delete-button'> 삭제하기 </button> <button id='close-button'> 취소하기 </button> </p>",
         );
 
-        let delete_button = win.document.getElementById("delete-button");
-        let close_button = win.document.getElementById("close-button");
-        let id_input = win.document.getElementById("id-text")
-        let pass_input = win.document.getElementById("password-text");
-        delete_button.onclick = function() { checkWriterInfo(comment_id, id_input.value, pass_input.value, win); }
-        close_button.onclick = function () { close(win) };
+        let delete_button = deleteWindow.document.getElementById("delete-button");
+        let close_button = deleteWindow.document.getElementById("close-button");
+        let id_input = deleteWindow.document.getElementById("id-text");
+        let pass_input = deleteWindow.document.getElementById("password-text");
+        console.log(id_input);
+        delete_button.onclick = function() { deleteComment(comment_id, id_input.value, pass_input.value, deleteWindow)}
+        close_button.onclick = function () { deleteWindow.close() };
     }
-
-    function updateComment(comment_id){
-        // 댓글 수정을 위한 로직
-        let paramsForCommentUpdate = {
-            "comment_id": comment_id,
-            "board_id": 1,
-            "depth": 1,
-            "parent": 1,
-            "writer": 1,
-            "password": 1,
-            "content": 1,
-            "date": 1
-        }
-
-        $.ajax({
-            type : "PUT",
-            data : paramsForCommentUpdate,
-            url : "/boards/" + ${board.board_id} + "/comment/" + comment_id + "?page=" + pagingVo.nowPage,
-            success : function(res){
-                updatePagingVo(res.pagingVo);
-                loadComments(res.comments);
-            },
-            error : function(XMLHttpRequest, textStatus, errorThrown){
-                alert("페이지 로딩에 실패하였습니다.")
-            }
-        });
-    }
-
 </script>
+
 </html>

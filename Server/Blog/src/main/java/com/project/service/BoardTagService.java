@@ -10,6 +10,10 @@ import java.util.List;
 public class BoardTagService {
     private BoardTagDao boardTagDao;
 
+    public BoardTagService(DataSource dataSource) {
+        boardTagDao = new BoardTagDao(dataSource);
+    }
+
     public void BoardTagService(DataSource dataSource){
         this.boardTagDao = new BoardTagDao(dataSource);
     }

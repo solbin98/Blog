@@ -34,9 +34,9 @@ public class TagDao {
 
 
 
-    public List<TagDto> selectById(int tag_id){
-        List<TagDto> ret = jdbcTemplate.query("select * from Tag where tag_id = " + tag_id , TagDtoRowMapper);
-        return ret;
+    public TagDto selectById(int tag_id){
+        List<TagDto> ret = jdbcTemplate.query("select * from Tag where tag_id = ?" , TagDtoRowMapper, tag_id);
+        return ret.get(0);
     }
 
     public void insert(TagDto tag){

@@ -1,9 +1,7 @@
 package com.project.dao;
 
-import com.project.dto.BoardDto;
-import com.project.dto.CategoryDto;
 import com.project.dto.CommentDto;
-import com.project.util.CommentWriterInfo;
+import com.project.util.CommentWriterDto;
 import com.project.util.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -67,7 +65,7 @@ public class CommentDao {
         return ret;
     }
 
-    public int selectWriterInfo(CommentWriterInfo commentWriterInfo, int comment_id){
+    public int selectWriterInfo(CommentWriterDto commentWriterInfo, int comment_id){
         Integer result = jdbcTemplate.queryForObject(
                 "select count(*) from Comment where comment_id = ? and writer = ? and password = ?",
                 Integer.class,
@@ -76,9 +74,6 @@ public class CommentDao {
     }
 
     public void insert(CommentDto commentDto){
-        System.out.println("여기까지 왔음 sql : " +
-                "insert into Comment (board_id, depth, parent, writer, password, content, date)" +
-                "values(");
         jdbcTemplate.update("insert into Comment (board_id, depth, parent, writer, password, content, date) " +
                         "           values (?,?,?,?,?,?,?)",
                 commentDto.getBoard_id(),
@@ -92,14 +87,10 @@ public class CommentDao {
     }
 
     public void update(CommentDto commentDto){
-        jdbcTemplate.update("update Comment set (?,?,?,?,?,?,?)",
-                commentDto.getBoard_id(),
-                commentDto.getDepth(),
-                commentDto.getParent(),
-                commentDto.getWriter(),
-                commentDto.getPassword(),
+        System.out.println("content : " + commentDto.getContent() + " id : " + commentDto.getComment_id());
+        jdbcTemplate.update("update Comment set content = ? where comment_id = ?",
                 commentDto.getContent(),
-                commentDto.getDate()
+                commentDto.getComment_id()
         );
     }
 
