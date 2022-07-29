@@ -3,6 +3,7 @@
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <h2 class="blog-title"> solbin98 </h2>
+            <a href="/board-write" class="category"> write board </a>
             <c:forEach var="category" items="${categories}" varStatus="idx" >
                 <p class="category">
                     <a href="/category/${category.category_id}/boards" class="a-color"> ${category.name} (${category.total})</a>

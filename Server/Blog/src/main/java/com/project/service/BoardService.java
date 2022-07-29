@@ -15,6 +15,7 @@ public class BoardService {
         this.boardDao = new BoardDao(dataSource);
     }
 
+    public int getLastBoardID() {return boardDao.selectLastBoardID();}
     public int getTotal(int category_id){return boardDao.selectCountCategory(category_id);}
     public int getTotal(){return boardDao.selectCount();}
     public List<BoardDto> getAllBoard(){ return boardDao.selectAll();}

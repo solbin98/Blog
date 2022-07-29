@@ -7,11 +7,17 @@
     <link href="/resources/myCss.css" rel="stylesheet" type="text/css" />
     <link href="/resources/sidebar.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
-    <script src="/resources/js/controller.js"></script>
-    <script src="/resources/js/model.js"></script>
 </head>
 <script src="//code.jquery.com/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+<script>
+    MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+
 
 <body style="background-color: #E8E8E8">
     <div class="RootDiv">

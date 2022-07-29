@@ -20,7 +20,8 @@ public class BoardDao {
                     rs.getInt("category_id"),
                     rs.getString("title"),
                     rs.getString("content"),
-                    rs.getTimestamp("date").toLocalDateTime());
+                    rs.getString("date"),
+                    rs.getInt("view"));
             return boardDto;
         }
     };
@@ -29,6 +30,11 @@ public class BoardDao {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     public BoardDao(DataSource dataSource){ jdbcTemplate = new JdbcTemplate(dataSource); }
+
+    public int selectLastBoardID(){
+        Integer ret = jdbcTemplate.queryForObject("select board_id from board ORDER BY board_id DESC LIMIT 1", Integer.class);
+        return ret;
+    }
 
     public List<BoardDto> selectAll(){
         List<BoardDto> ret = jdbcTemplate.query("select * from Board", boardDtoRowMapper );
@@ -67,24 +73,27 @@ public class BoardDao {
     }
 
     public void insert(BoardDto boardDto){
+        System.out.println(boardDto.toString());
         jdbcTemplate.update(
-                "insert into Board values(?,?,?,?)",
-                boardDto.getBoard_id(),
-                boardDto.getCategory_id(),
-                boardDto.getTitle(),
-                boardDto.getContent(),
-                boardDto.getDate());
-    }
-
-    public void update(BoardDto boardDto){
-        jdbcTemplate.update(
-                "update Board set(?,?,?,?) where board_id = ?",
-                boardDto.getBoard_id(),
+                "insert into Board(category_id, title, content, date, view) values(?,?,?,?,?)",
                 boardDto.getCategory_id(),
                 boardDto.getTitle(),
                 boardDto.getContent(),
                 boardDto.getDate(),
-                boardDto.getBoard_id());
+                boardDto.getView()
+        );
+    }
+
+    public void update(BoardDto boardDto){
+        jdbcTemplate.update(
+                "update Board(category_id, title, content, date, view) values(?,?,?,?,?) where board_id = ?",
+                boardDto.getCategory_id(),
+                boardDto.getTitle(),
+                boardDto.getContent(),
+                boardDto.getDate(),
+                boardDto.getView(),
+                boardDto.getBoard_id()
+        );
     }
 
     public void delete(int board_id){

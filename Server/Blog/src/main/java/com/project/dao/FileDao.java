@@ -1,5 +1,6 @@
 package com.project.dao;
 
+import com.project.dto.CommentDto;
 import com.project.dto.FileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,23 +42,18 @@ public class FileDao {
         return ret;
     }
 
+
     public void insert(FileDto fileDto){
-        jdbcTemplate.update("insert into File values (?,?,?,?,?,?)",
-                fileDto.getFile_id(),
-                fileDto.getPath(),
-                fileDto.getName(),
-                fileDto.getType(),
-                fileDto.getSize());
+        jdbcTemplate.update("insert into File(board_id, path, name, type, size) values (?,?,?,?,?)",
+            fileDto.getBoard_id(),
+            fileDto.getPath(),
+            fileDto.getName(),
+            fileDto.getType(),
+            fileDto.getSize());
     }
 
-    public void update(FileDto fileDto){
-        jdbcTemplate.update("update File set (?,?,?,?,?,?) where file_id = ?",
-                fileDto.getFile_id(),
-                fileDto.getPath(),
-                fileDto.getName(),
-                fileDto.getType(),
-                fileDto.getSize(),
-                fileDto.getFile_id());
+    public void updateBoardID(int boardID, String fileName){
+        jdbcTemplate.update("update File set board_id = ? where name = ?", boardID, fileName);
     }
 
     public void delete(int file_id){

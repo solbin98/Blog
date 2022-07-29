@@ -10,15 +10,24 @@ public class BoardDto {
     int category_id;
     String title;
     String content;
-    @DateTimeFormat(pattern = "yyyyMMddHH")
-    LocalDateTime date;
+    String date;
+    int view;
 
-    public BoardDto(int board_id, int category_id, String title, String content, LocalDateTime date) {
+    public int getView() {
+        return view;
+    }
+
+    public void setView(int view) {
+        this.view = view;
+    }
+
+    public BoardDto(int board_id, int category_id, String title, String content, String date, int view) {
         this.board_id = board_id;
         this.category_id = category_id;
         this.title = title;
         this.content = content;
         this.date = date;
+        this.view = view;
     }
 
     public int getBoard_id() {
@@ -45,10 +54,22 @@ public class BoardDto {
     public void setContent(String content) {
         this.content = content;
     }
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
-    public void setDate(LocalDateTime date) {
+    public void setDate(String date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "BoardDto{" +
+                "board_id=" + board_id +
+                ", category_id=" + category_id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", date='" + date + '\'' +
+                ", view=" + view +
+                '}';
     }
 }

@@ -33,7 +33,7 @@ public class CategoryController {
     @Autowired
     private BoardTagService boardTagService;
 
-    @RequestMapping("")
+    @RequestMapping("/")
     public String func(Model model){
         model.addAttribute("");
         model.addAttribute("categories", categoryService.getAllCategory());

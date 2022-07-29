@@ -74,8 +74,7 @@ public class CommentDao {
     }
 
     public void insert(CommentDto commentDto){
-        jdbcTemplate.update("insert into Comment (board_id, depth, parent, writer, password, content, date) " +
-                        "           values (?,?,?,?,?,?,?)",
+        jdbcTemplate.update("insert into Comment (board_id, depth, parent, writer, password, content, date) values (?,?,?,?,?,?,?)",
                 commentDto.getBoard_id(),
                 commentDto.getDepth(),
                 commentDto.getParent(),

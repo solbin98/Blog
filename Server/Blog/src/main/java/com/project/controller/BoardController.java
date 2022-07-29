@@ -1,21 +1,29 @@
 package com.project.controller;
 
-import com.project.dto.BoardTagDto;
-import com.project.dto.CommentDto;
-import com.project.dto.TagDto;
+import com.project.dto.*;
 import com.project.service.*;
+import com.project.util.BoardWriteInfoDto;
 import com.project.util.CommentWriterDto;
+import com.project.util.ImageDto;
 import com.project.util.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class BoardController {
@@ -25,17 +33,16 @@ public class BoardController {
     CategoryService categoryService;
     @Autowired
     BoardService boardService;
-
     @Autowired
     BoardTagService boardTagService;
-
     @Autowired
     TagService tagService;
+    @Autowired
+    FileService fileService;
 
 
     @GetMapping(value = "boards/{board_id}*")
-    public String board (Model model, @PathVariable("board_id") int board_id, @RequestParam("category") int category){
-
+    public String getBoard (Model model, @PathVariable("board_id") int board_id, @RequestParam("category") int category){
         int total = commentService.getTotal(board_id);
         PagingVo pagingVo = new PagingVo(1,30, total);
 
@@ -47,10 +54,67 @@ public class BoardController {
         return "board";
     }
 
+    @PostMapping(value = "boards/image")
+    @ResponseBody
+    public Map<String, Object> addImageToEditor(ImageDto imageDto, Model model) throws IOException {
+        MultipartFile file = imageDto.getImage()[0];
+
+        String originalName = file.getOriginalFilename();
+        String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+        String uuid = UUID.randomUUID().toString();
+
+        String uploadPath = "C:\\springTest";
+        String uuidName = uuid + "_" + fileName;
+        String saveFileName = uploadPath + File.separator + uuidName;
+        Path savePath = Paths.get(saveFileName);
+        file.transferTo(savePath);
+
+        fileService.addFile(new FileDto(0, 0, saveFileName, uuidName , file.getContentType(), Long.toString(file.getSize())));
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("name", uuidName);
+        return result;
+    }
+
+    @PostMapping(value = "boards")
+    @ResponseBody
+    public String writeBoard(BoardWriteInfoDto boardWriteInfoDto) {
+        int categoryID = boardWriteInfoDto.getCategoryID();
+        String title = boardWriteInfoDto.getTitle();
+        String content = boardWriteInfoDto.getContent();
+        String date = boardWriteInfoDto.getDate();
+        boardService.addBoard(new BoardDto(0, categoryID, title, content, date, 0));
+        List<String> resultImageList = boardWriteInfoDto.getImage();
+        for(int i=0;i<resultImageList.size();i++){
+            int board_id = boardService.getLastBoardID();
+            fileService.updateBoardId(board_id, resultImageList.get(i));
+        }
+        return "boardWrite";
+    }
+
+    @PutMapping(value = "boards")
+    @ResponseBody
+    public String updateBoard(BoardWriteInfoDto boardWriteInfoDto) {
+
+        return "boardWrite";
+    }
+
+    @GetMapping(value="board-write")
+    public String writeBoardPage(){
+        return "boardWrite";
+    }
+
+
+    @ResponseBody
+    @GetMapping(value="boards/{board_id}/comment*")
+    public Map<String, Object> getCommentPaging(@PathVariable("board_id") int board_id, @RequestParam("page") int nowPage){
+        Map<String, Object> result = getCommentResultMapObject(nowPage, board_id);
+        return result;
+    }
+
     @ResponseBody
     @PostMapping(value="boards/{board_id}/comment")
     public Map<String, Object> commentWrite(@PathVariable("board_id") int board_id, CommentDto commentdto){
-        System.out.println(commentdto.toString());
         commentService.addComment(commentdto);
         int total = commentService.getTotal(board_id);
         PagingVo pagingVo = new PagingVo(1, 30, total);
@@ -60,13 +124,6 @@ public class BoardController {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("comments", ret);
         result.put("pagingVo", pagingVo);
-        return result;
-    }
-
-    @ResponseBody
-    @GetMapping(value="boards/{board_id}/comment*")
-    public Map<String, Object> getCommentPaging(@PathVariable("board_id") int board_id, @RequestParam("page") int nowPage){
-        Map<String, Object> result = getCommentResultMapObject(nowPage, board_id);
         return result;
     }
 
@@ -95,7 +152,6 @@ public class BoardController {
                                                 @RequestHeader("id") String id,
                                                 @RequestHeader("password") String password,
                                                 @RequestHeader("content") String content){
-
 
         CommentWriterDto commentWriterDto = new CommentWriterDto(URLDecoder.decode(id), URLDecoder.decode(password));
         int res = commentService.checkCommentWriterInfo(commentWriterDto, comment_id);;

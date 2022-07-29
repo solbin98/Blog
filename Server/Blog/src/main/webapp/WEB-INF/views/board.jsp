@@ -9,6 +9,14 @@
 </head>
 <script src="//code.jquery.com/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+<script>
+    MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+
 
 <body style="background-color: #E8E8E8">
     <div class="RootDiv">
@@ -121,7 +129,7 @@
             let arrSize = tree[parentID].length;
             for(let j=0;j<arrSize;j++){
                 let nowIdx = tree[parentID][j];
-                createElement(commentListArray, nowIdx, elementID++);
+                createCommentBlock(commentListArray, nowIdx, elementID++);
             }
         }
 
@@ -133,7 +141,7 @@
             for(let j=0;j<arrSize;j++) {
                 let nowIdx = tree[parentID][j]; // nowIdx -> 현재 가르키는 원소의 commentListArray 에서의 인덱스
                 if (commentListArray[nowIdx].parent ==  tree["empty_parent"]) continue;
-                createElement(commentListArray[nowIdx], elementID++);
+                createCommentBlock(commentListArray[nowIdx], elementID++);
             }
         }
     }
@@ -196,23 +204,22 @@
                 innerHTML += "<img class='comment-block-reply-front-image' id='comment-block-reply-front-image-update' src= '/resources/png/right-and-down.png' /img>";
                 innerHTML += "<div class='comment-block-reply'>";
             }
-            else innerHTML += "<div class='comment-block'>";
-            innerHTML += "<h4 class = 'comment-headline-text-writer'> 댓글 수정 하기 </h4>";
-            innerHTML += "<textarea class='comment-write-content' placeholder='댓글 내용을 작성해주세요' id='comment-content-update' >"+parentBlockContent+"</textarea>"
-            innerHTML += "<div class='comment-write-bottom'>"
-                + "<div class='comment-write-info'>"
-                + "<input type='text' class='comment-write-name' placeholder='아이디' id='comment-writer-name-update' value = " + parentBlockId +">  </input>"
-                + "<input type='password' class='comment-write-password' placeholder='비밀번호' id='comment-writer-password-update'>  </input>"
-                + "</div>"
-                + "<button class='comment-write-submit-button' id='comment-submit-update-cancel'> 취소 </button>"
-            innerHTML +=  "<button class='comment-write-submit-button' id='comment-submit-update'> 댓글수정 </button>";
+            else innerHTML += "<div class='comment-block'>"
+            innerHTML  += "<h4 class = 'comment-headline-text-writer'> 댓글 수정 하기 </h4>"
+                       + "<textarea class='comment-write-content' placeholder='댓글 내용을 작성해주세요' id='comment-content-update' >"+parentBlockContent+"</textarea>"
+                       + "<div class='comment-write-bottom'>"
+                       + "<div class='comment-write-info'>"
+                       + "<input type='text' class='comment-write-name' placeholder='아이디' id='comment-writer-name-update' value = " + parentBlockId +">  </input>"
+                       + "<input type='password' class='comment-write-password' placeholder='비밀번호' id='comment-writer-password-update'>  </input>"
+                       + "</div>"
+                       + "<button class='comment-write-submit-button' id='comment-submit-update-cancel'> 취소 </button>"
+                       +  "<button class='comment-write-submit-button' id='comment-submit-update'> 댓글수정 </button>";
         }
         innerHTML += "</div>" + "</div>" + "</div>"
 
         commentBlockOuter.innerHTML = innerHTML;
         let commentBlockList = document.getElementById("comment-block-list");
         if(type == "update"){
-
             let current_block = document.getElementById("comment-block-outer-" + (parent_html_id));
             let children = current_block.childNodes;
             for(let i=0; i<current_block.childElementCount;i++){
@@ -231,7 +238,7 @@
         }
     }
 
-    function createElement(comment, elementID){
+    function createCommentBlock(comment, elementID){
         let commentBlockList = document.getElementById("comment-block-list");
 
         let commentBlockOuter = document.createElement("div");
