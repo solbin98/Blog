@@ -33,9 +33,8 @@ public class CategoryController {
     @Autowired
     private BoardTagService boardTagService;
 
-    @RequestMapping("/")
+    @RequestMapping("/main")
     public String func(Model model){
-        model.addAttribute("");
         model.addAttribute("categories", categoryService.getAllCategory());
         return "category";
     }
@@ -60,7 +59,7 @@ public class CategoryController {
 
     public List<TagDto> getTags(int board_id){
         List<BoardTagDto> boardTagDtos = boardTagService.getBoardTag(board_id);
-        List<TagDto> tags = tagService.getBoardTag(boardTagDtos);
+        List<TagDto> tags = tagService.getTagsByBoardTags(boardTagDtos);
         return tags;
     }
 

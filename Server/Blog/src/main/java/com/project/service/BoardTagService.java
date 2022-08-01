@@ -28,4 +28,5 @@ public class BoardTagService {
     public void deleteBoardTag(BoardTagDto boardTagDto){
         boardTagDao.delete(boardTagDto);
     }
+    public void deleteBoardByBoardID(int board_id) {boardTagDao.deleteByBoardID(board_id);}
 }

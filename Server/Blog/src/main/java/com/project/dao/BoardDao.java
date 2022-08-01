@@ -86,7 +86,7 @@ public class BoardDao {
 
     public void update(BoardDto boardDto){
         jdbcTemplate.update(
-                "update Board(category_id, title, content, date, view) values(?,?,?,?,?) where board_id = ?",
+                "update Board set category_id = ?, title=?, content=?, date=?, view=? where board_id = ?",
                 boardDto.getCategory_id(),
                 boardDto.getTitle(),
                 boardDto.getContent(),

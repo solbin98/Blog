@@ -44,6 +44,7 @@
             }
         });
     };
+
     function deleteComment(comment_id, ids, pass, win){
         console.log("넘어온 id : " + ids + " 비번 : " + pass);
         $.ajax({
@@ -64,6 +65,7 @@
             }
         });
     }
+
     function updateComment(comment_id){
         let id = document.getElementById("comment-writer-name-update").value;
         let password = document.getElementById("comment-writer-password-update").value;
@@ -103,5 +105,18 @@
         });
     }
 
+    function deleteBoard(board_id){
+        $.ajax({
+            type : "DELETE",
+            url : "/boards/" + ${board.board_id},
+            success : function(res){
+                alert("댓글 삭제에 성공 했습니다.")
+                location.replace("/main");
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown){
+                alert("댓글 삭제에 실패하였습니다.")
+            }
+        });
+    }
 
 </script>

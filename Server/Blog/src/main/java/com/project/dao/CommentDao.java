@@ -86,7 +86,6 @@ public class CommentDao {
     }
 
     public void update(CommentDto commentDto){
-        System.out.println("content : " + commentDto.getContent() + " id : " + commentDto.getComment_id());
         jdbcTemplate.update("update Comment set content = ? where comment_id = ?",
                 commentDto.getContent(),
                 commentDto.getComment_id()
@@ -94,6 +93,7 @@ public class CommentDao {
     }
 
     public void delete(int comment_id){
-        jdbcTemplate.update("delete from Comment where comment_id = " + comment_id);
+        jdbcTemplate.update("delete from Comment where comment_id = ?", comment_id);
     }
+    public void deleteByBoardID(int board_id) { jdbcTemplate.update("delete from Comment where board_id = ?", board_id); }
 }

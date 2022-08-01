@@ -2,6 +2,7 @@ package com.project.config;
 
 import com.project.controller.BoardController;
 import com.project.controller.CategoryController;
+import com.project.controller.CommentController;
 import com.project.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,4 +19,7 @@ public class ControllerConfig {
 
     @Bean
     public BoardController boardController() {return new BoardController();}
+
+    @Bean
+    public CommentController commentController() { return new CommentController();}
 }

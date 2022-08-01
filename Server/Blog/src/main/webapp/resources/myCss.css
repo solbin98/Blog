@@ -212,7 +212,8 @@ a:hover { text-decoration-color:black }
 }
 
 .board-headline{
-    width: 100%;
+    width: 95%;
+    margin-left: 2%;
     display: flex;
 }
 
@@ -231,10 +232,23 @@ a:hover { text-decoration-color:black }
     padding: 15px;
 }
 
+.board-edit{
+    width: 20px;
+    height: 20px;
+    align-self: center;
+}
+
+.board-delete{
+    width: 20px;
+    height: 20px;
+    margin: 2%;
+    align-self: center;
+}
+
 .board-tagline{
-    width: 80%;
+    width: 95%;
     padding-left: 15px;
-    margin:0px;
+    margin-left: 1%;
     display: flex;
 }
 
@@ -243,10 +257,11 @@ a:hover { text-decoration-color:black }
 }
 
 .board-content{
-    width: 70%;
+    width: 95%;
     margin-top: 35px;
-    align-content: center;
-    padding: 10px;
+    margin-left: 1%;
+    align-self: center;
+    padding: 20px;
 }
 
 .page-number-div-outer{

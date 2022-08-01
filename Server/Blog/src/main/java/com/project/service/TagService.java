@@ -15,18 +15,37 @@ public class TagService {
         this.tagDao = new TagDao(dataSource);
     }
 
-    public List<TagDto> getBoardTag(List<BoardTagDto> boardTags) {
+    public List<TagDto> getTagsByBoardTags(List<BoardTagDto> boardTags) {
         List<TagDto> ret = new ArrayList<>();
-        System.out.println("retSize : " + boardTags.size());
         for(int i=0; i < boardTags.size(); i++){
             int tagID = boardTags.get(i).getTag_id();
-            System.out.println(tagID + " 에 의한 검색");
             TagDto tmp = getTag(tagID);
-            System.out.println(tmp.getName() + " 가 추가되었습니다.");
             ret.add(tmp);
         }
         return ret;
     };
+
+    public int getLastTagID(){
+        return tagDao.selectLastTagID();
+    }
+
+    public List<TagDto> getTagsByTagNames(List<String> tagNames){
+        List<TagDto> ret = new ArrayList();
+        for(int i=0;i<tagNames.size();i++){
+            String name = tagNames.get(i);
+            System.out.println("name : " + name);
+            TagDto tagDto = getTagByName(name);
+            if(tagDto == null) {
+                addTag(new TagDto(0, name));
+                int lastID = getLastTagID();
+                ret.add(new TagDto(lastID, name));
+            }
+            else ret.add(tagDto);
+        }
+        return ret;
+    }
+
+    public TagDto getTagByName(String name){ return tagDao.selectByName(name); }
     public List<TagDto> getAllTag(){
         return tagDao.selectAll();
     }

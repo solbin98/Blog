@@ -32,15 +32,25 @@ public class TagDao {
         return ret;
     }
 
-
-
     public TagDto selectById(int tag_id){
         List<TagDto> ret = jdbcTemplate.query("select * from Tag where tag_id = ?" , TagDtoRowMapper, tag_id);
+        if(ret.size() == 0) return null;
         return ret.get(0);
     }
 
+    public TagDto selectByName(String name){
+        List<TagDto> ret = jdbcTemplate.query("select * from Tag where name = ?", TagDtoRowMapper, name);
+        if(ret.size() == 0) return null;
+        return ret.get(0);
+    }
+
+    public int selectLastTagID(){
+        Integer ret = jdbcTemplate.queryForObject("select tag_id from tag ORDER BY tag_id DESC LIMIT 1", Integer.class);
+        return ret;
+    }
+
     public void insert(TagDto tag){
-        jdbcTemplate.update("insert into Tag values(?,?)", tag.getTag_id(), tag.getName());
+        jdbcTemplate.update("insert into Tag(tag_id, name) values(?,?)", tag.getTag_id(), tag.getName());
     }
 
     public void update(TagDto tag){

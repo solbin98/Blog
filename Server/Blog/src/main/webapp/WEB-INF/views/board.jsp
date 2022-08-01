@@ -26,6 +26,8 @@
             <div class="board-block-full">
                 <div class="board-headline">
                     <h2 class="board-headline-title"> ${board.title} </h2>
+                    <img src="/resources/png/delete.png" class="board-delete" id="board-delete">
+                    <a href="/board-update-page/${board.board_id}" class="board-edit"> <img src="/resources/png/edit.png" class="board-edit" id="edit"> </img> </a>
                     <p class="board-headline-date"> ${board.date} </p>
                 </div>
 
@@ -358,6 +360,8 @@
         delete_button.onclick = function() { deleteComment(comment_id, id_input.value, pass_input.value, deleteWindow)}
         close_button.onclick = function () { deleteWindow.close() };
     }
+
+    document.getElementById("board-delete").onclick = function () { deleteBoard(${board.board_id}) }
 </script>
 
 </html>

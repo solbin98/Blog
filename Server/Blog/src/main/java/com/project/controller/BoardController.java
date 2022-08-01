@@ -20,10 +20,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class BoardController {
@@ -76,109 +73,87 @@ public class BoardController {
         return result;
     }
 
+    @DeleteMapping(value="boards/{board_id}")
+    @ResponseBody
+    public String deleteBoard(@PathVariable("board_id") int board_id){
+        commentService.deleteByBoardID(board_id);
+        boardTagService.deleteBoardByBoardID(board_id);
+        boardService.deleteBoard(board_id);
+        return "ok";
+    }
+
     @PostMapping(value = "boards")
     @ResponseBody
-    public String writeBoard(BoardWriteInfoDto boardWriteInfoDto) {
+    public Map<String, Object> writeOrUpdateBoard(BoardWriteInfoDto boardWriteInfoDto) {
+        int boardID = boardWriteInfoDto.getBoard_id();
         int categoryID = boardWriteInfoDto.getCategoryID();
         String title = boardWriteInfoDto.getTitle();
         String content = boardWriteInfoDto.getContent();
         String date = boardWriteInfoDto.getDate();
-        boardService.addBoard(new BoardDto(0, categoryID, title, content, date, 0));
-        List<String> resultImageList = boardWriteInfoDto.getImage();
+        String type = boardWriteInfoDto.getType();
+
+        BoardDto boardDto = new BoardDto(boardID, categoryID, title, content, date, 0);
+        if(type.equals("write")) boardService.addBoard(boardDto);
+        else boardService.updateBoard(boardDto);
+
+        int board_id = boardService.getLastBoardID();
+        if(type.equals("update")) {
+            board_id = boardID;
+            boardTagService.deleteBoardByBoardID(board_id);
+        }
+
+        List<String> tagNames = boardWriteInfoDto.getTag();
+        List<TagDto> tagDtoToAdd = tagService.getTagsByTagNames(tagNames);
+        for(int i=0;i<tagDtoToAdd.size();i++){
+            boardTagService.addBoardTag(new BoardTagDto(tagDtoToAdd.get(i).getTag_id(), board_id));
+        }
+
+        List<String> resultImageList = new ArrayList<>();
+        if(boardWriteInfoDto.getImage() != null) resultImageList = boardWriteInfoDto.getImage();
         for(int i=0;i<resultImageList.size();i++){
-            int board_id = boardService.getLastBoardID();
             fileService.updateBoardId(board_id, resultImageList.get(i));
         }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("resultCode", 1);
+        return result;
+    }
+
+    @GetMapping(value="board-write-page")
+    public String writeBoardPage(Model model){
+        model.addAttribute("categories", categoryService.getAllCategory());
+        model.addAttribute("board_id", 0);
+        model.addAttribute("content", "");
+        model.addAttribute("type","write");
         return "boardWrite";
     }
 
-    @PutMapping(value = "boards")
-    @ResponseBody
-    public String updateBoard(BoardWriteInfoDto boardWriteInfoDto) {
+    @GetMapping(value = "board-update-page/{board_id}")
+    public String updateBoardPage(@PathVariable("board_id")int board_id, Model model){
+        BoardDto boardDto = boardService.getBoard(board_id);
+        System.out.println(boardDto.getContent());
+        String content = boardDto.getContent();
+        model.addAttribute("categories", categoryService.getAllCategory());
+        model.addAttribute("boardID", board_id);
+        model.addAttribute("type", "update");
+        model.addAttribute("title", boardDto.getTitle());
+        model.addAttribute("content", content);
+        model.addAttribute("categoryID",boardDto.getCategory_id());
 
+        String tagString = "";
+        List<TagDto> ret = getTags(board_id);
+        for(int i=0;i<ret.size();i++) {
+            tagString += ret.get(i).getName();
+            if(i != ret.size()-1) tagString += " ";
+        }
+        model.addAttribute("tags", tagString);
         return "boardWrite";
-    }
-
-    @GetMapping(value="board-write")
-    public String writeBoardPage(){
-        return "boardWrite";
-    }
-
-
-    @ResponseBody
-    @GetMapping(value="boards/{board_id}/comment*")
-    public Map<String, Object> getCommentPaging(@PathVariable("board_id") int board_id, @RequestParam("page") int nowPage){
-        Map<String, Object> result = getCommentResultMapObject(nowPage, board_id);
-        return result;
-    }
-
-    @ResponseBody
-    @PostMapping(value="boards/{board_id}/comment")
-    public Map<String, Object> commentWrite(@PathVariable("board_id") int board_id, CommentDto commentdto){
-        commentService.addComment(commentdto);
-        int total = commentService.getTotal(board_id);
-        PagingVo pagingVo = new PagingVo(1, 30, total);
-        pagingVo.setNowPage(pagingVo.getLastPage());
-
-        List<CommentDto> ret = commentService.getCommentPaging(pagingVo, board_id);
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("comments", ret);
-        result.put("pagingVo", pagingVo);
-        return result;
-    }
-
-    @ResponseBody
-    @DeleteMapping(value="boards/{board_id}/comment/{comment_id}*")
-    public Map<String, Object> commentDelete(@PathVariable("comment_id") int comment_id,
-                                                @PathVariable("board_id") int board_id,
-                                                @RequestHeader("id") String id,
-                                                @RequestHeader("password") String password){
-
-        CommentWriterDto commentWriterInfo = new CommentWriterDto(URLDecoder.decode(id), URLDecoder.decode(password));
-        int res = commentService.checkCommentWriterInfo(commentWriterInfo, comment_id);
-        int numberOfChild = commentService.getCommentCountByParent(comment_id);
-        if(numberOfChild == 0 && res == 1) commentService.deleteComment(comment_id);
-        Map<String, Object> result = getCommentResultMapObject(1, board_id);
-        result.put("resultCode", res);
-        return result;
-    }
-
-
-    @ResponseBody
-    @PutMapping(value="boards/{board_id}/comment/{comment_id}*")
-    public Map<String, Object> commentUpdate(   @PathVariable("comment_id") int comment_id,
-                                                @PathVariable("board_id") int board_id,
-                                                @RequestParam("page") int nowPage,
-                                                @RequestHeader("id") String id,
-                                                @RequestHeader("password") String password,
-                                                @RequestHeader("content") String content){
-
-        CommentWriterDto commentWriterDto = new CommentWriterDto(URLDecoder.decode(id), URLDecoder.decode(password));
-        int res = commentService.checkCommentWriterInfo(commentWriterDto, comment_id);;
-        if(res == 1) commentService.updateComment(new CommentDto(comment_id,0,0,0,"", "", content = URLDecoder.decode(content), ""));
-        Map<String, Object> result = getCommentResultMapObject(nowPage, board_id);
-        result.put("resultCode", res);
-        return result;
     }
 
     public List<TagDto> getTags(int board_id){
         List<BoardTagDto> boardTagDtos = boardTagService.getBoardTag(board_id);
-        List<TagDto> tags = tagService.getBoardTag(boardTagDtos);
+        List<TagDto> tags = tagService.getTagsByBoardTags(boardTagDtos);
         return tags;
     }
 
-    private Map<String,Object> getCommentResultMapObject(int nowPage, int board_id){
-        int total = commentService.getTotal(board_id);
-        PagingVo pagingVo = new PagingVo(nowPage, 30, total);
-
-        List<CommentDto> ret = commentService.getCommentPaging(pagingVo, board_id);
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("comments", ret);
-        result.put("pagingVo", pagingVo);
-        return result;
-    }
-
-    private void printf(String a){
-        System.out.println(a);
-    }
 }

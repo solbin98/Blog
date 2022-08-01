@@ -5,15 +5,17 @@ import com.project.dto.TagDto;
 import java.util.List;
 
 public class BoardWriteInfoDto {
-    List<Integer> tag;
+    List<String> tag;
     List<String> image;
     List<String> allImage;
+    int board_id;
     String content;
     String title;
     String date;
+    String type;
     int categoryID;
 
-    public BoardWriteInfoDto(List<Integer> tag, List<String> image, List<String> allImage, String content, String title, String date, int categoryID) {
+    public BoardWriteInfoDto(int board_id, String type, List<String> tag, List<String> image, List<String> allImage, String content, String title, String date, int categoryID) {
         this.tag = tag;
         this.image = image;
         this.allImage = allImage;
@@ -21,6 +23,8 @@ public class BoardWriteInfoDto {
         this.categoryID = categoryID;
         this.date = date;
         this.title = title;
+        this.type = type;
+        this.board_id = board_id;
     }
 
     public String getDate() {
@@ -31,11 +35,11 @@ public class BoardWriteInfoDto {
         this.date = date;
     }
 
-    public List<Integer> getTag() {
+    public List<String> getTag() {
         return tag;
     }
 
-    public void setTag(List<Integer> tag) {
+    public void setTag(List<String> tag) {
         this.tag = tag;
     }
 
@@ -79,16 +83,19 @@ public class BoardWriteInfoDto {
         this.title = title;
     }
 
-    @Override
-    public String toString() {
-        return "BoardWriteInfoDto{" +
-                "tag=" + tag +
-                ", image=" + image +
-                ", allImage=" + allImage +
-                ", content='" + content + '\'' +
-                ", title='" + title + '\'' +
-                ", date='" + date + '\'' +
-                ", categoryID=" + categoryID +
-                '}';
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getBoard_id() {
+        return board_id;
+    }
+
+    public void setBoard_id(int board_id) {
+        this.board_id = board_id;
     }
 }

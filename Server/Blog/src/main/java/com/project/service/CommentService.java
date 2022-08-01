@@ -29,4 +29,5 @@ public class CommentService {
     public void addComment(CommentDto commentDto) { commentDao.insert(commentDto);}
     public void updateComment(CommentDto commentDto) { commentDao.update(commentDto); }
     public void deleteComment(int comment_id) { commentDao.delete(comment_id); }
+    public void deleteByBoardID(int board_id) { commentDao.deleteByBoardID(board_id);}
 }

@@ -38,12 +38,16 @@ public class BoardTagDao {
     }
 
     public void insert(BoardTagDto boardTagDto){
-        jdbcTemplate.update("insert into BoardTag values(?,?)", boardTagDto.getTag_id(), boardTagDto.getBoard_id());
+        jdbcTemplate.update("insert into BoardTag(tag_id, board_id) values(?,?)", boardTagDto.getTag_id(), boardTagDto.getBoard_id());
     }
 
     public void delete(BoardTagDto boardTagDto){
         jdbcTemplate.update("delete from BoardTag where board_id = "
                 + boardTagDto.getBoard_id()
                 + " and tag_id = " + boardTagDto.getTag_id());
+    }
+
+    public void deleteByBoardID(int board_id){
+        jdbcTemplate.update("delete from BoardTag where board_id = " + board_id);
     }
 }
