@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -23,13 +26,25 @@ public class CategoryService {
 
     public List<CategoryDto> getAllCategory(){
         List<CategoryDto> ret = categoryDao.selectAll();
+        int [] totalList = new int [ret.size()+1];
+
         for(int i=0;i<ret.size();i++){
             int cid = ret.get(i).getCategory_id();
-            ret.get(i).setTotal(boardDao.selectCountCategory(cid));
+            int parent = ret.get(i).getParent();
+            int total = boardDao.selectCountCategory(cid);
+            totalList[cid] += total;
+            totalList[parent] += total;
         }
+
+        for(int i=0;i< ret.size();i++){
+            int cid = ret.get(i).getCategory_id();
+            ret.get(i).setTotal(totalList[cid]);
+        }
+
         return ret;
     }
 
+    public List<CategoryDto> getCategoryByParentID(int parent_id) { return categoryDao.selectByParentID(parent_id); }
     public int getCategoryTotal(int category_id){
       return categoryDao.selectCount(category_id);
     };

@@ -3,7 +3,6 @@ package com.project.controller;
 import com.project.dto.*;
 import com.project.service.*;
 import com.project.util.BoardWriteInfoDto;
-import com.project.util.CommentWriterDto;
 import com.project.util.ImageDto;
 import com.project.util.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -53,12 +47,14 @@ public class BoardController {
 
     @PostMapping(value = "boards/image")
     @ResponseBody
-    public Map<String, Object> addImageToEditor(ImageDto imageDto, Model model) throws IOException {
+    public Map<String, Object> saveImage(ImageDto imageDto, Model model) throws IOException {
         MultipartFile file = imageDto.getImage()[0];
 
         String originalName = file.getOriginalFilename();
         String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+        System.out.println("fileName : " + fileName);
         String uuid = UUID.randomUUID().toString();
+
 
         String uploadPath = "C:\\springTest";
         String uuidName = uuid + "_" + fileName;
@@ -79,6 +75,11 @@ public class BoardController {
         commentService.deleteByBoardID(board_id);
         boardTagService.deleteBoardByBoardID(board_id);
         boardService.deleteBoard(board_id);
+        List<FileDto> list = fileService.getFileByBoardID(board_id);
+        for(int i=0;i< list.size();i++){
+            String fileName = list.get(i).getName();
+            fileService.updateBoardId(0, fileName);
+        }
         return "ok";
     }
 
@@ -94,7 +95,7 @@ public class BoardController {
 
         BoardDto boardDto = new BoardDto(boardID, categoryID, title, content, date, 0);
         if(type.equals("write")) boardService.addBoard(boardDto);
-        else boardService.updateBoard(boardDto);
+        else if(type.equals("update")) boardService.updateBoard(boardDto);
 
         int board_id = boardService.getLastBoardID();
         if(type.equals("update")) {
@@ -131,22 +132,13 @@ public class BoardController {
     @GetMapping(value = "board-update-page/{board_id}")
     public String updateBoardPage(@PathVariable("board_id")int board_id, Model model){
         BoardDto boardDto = boardService.getBoard(board_id);
-        System.out.println(boardDto.getContent());
-        String content = boardDto.getContent();
         model.addAttribute("categories", categoryService.getAllCategory());
         model.addAttribute("boardID", board_id);
         model.addAttribute("type", "update");
         model.addAttribute("title", boardDto.getTitle());
-        model.addAttribute("content", content);
+        model.addAttribute("content", boardDto.getContent());
         model.addAttribute("categoryID",boardDto.getCategory_id());
-
-        String tagString = "";
-        List<TagDto> ret = getTags(board_id);
-        for(int i=0;i<ret.size();i++) {
-            tagString += ret.get(i).getName();
-            if(i != ret.size()-1) tagString += " ";
-        }
-        model.addAttribute("tags", tagString);
+        model.addAttribute("tags", TagNameString(getTags(board_id)));
         return "boardWrite";
     }
 
@@ -154,6 +146,15 @@ public class BoardController {
         List<BoardTagDto> boardTagDtos = boardTagService.getBoardTag(board_id);
         List<TagDto> tags = tagService.getTagsByBoardTags(boardTagDtos);
         return tags;
+    }
+
+    public String TagNameString(List<TagDto> tag){
+        String tagString = "";
+        for(int i=0;i<tag.size();i++) {
+            tagString += tag.get(i).getName();
+            if(i != tag.size()-1) tagString += " ";
+        }
+        return tagString;
     }
 
 }

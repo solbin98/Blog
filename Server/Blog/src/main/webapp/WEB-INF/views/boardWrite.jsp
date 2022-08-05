@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,6 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous"/>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+  <script src="/resources/js/getNowDate.js"></script>
   <script>
     let options = {
       delimiters: [
@@ -75,7 +78,7 @@
 
         return [
           { type: 'openTag', tagName: 'div', outerNewLine: true },
-          { type: 'html', content: body.innerHTML },
+          { type: 'html', content: body.content },
           { type: 'closeTag', tagName: 'div', outerNewLine: true }
         ];
       },
@@ -90,7 +93,7 @@
         let url = '/images/';
         $.ajax({
           type: 'POST',
-          url: 'boards/image',
+          url: '/boards/image',
           data: formData,
           dataType: 'json',
           processData: false,
@@ -112,9 +115,10 @@
 
   let string
   if(type == "update") {
-    editor.setHTML('${content.replace("\\","\\\\")}');
+    let str = `${fn:replace(content, '\\', '\\\\')}`;
+    console.log(str + " 기본 ");
+    editor.setHTML(str);
   }
-
 
 
   function getImageFileNames(htmlCode){
@@ -136,6 +140,7 @@
   }
 
   function boardSubmit(htmlCode, images, allImage, category, title, date, tag, type, board_id) {
+    console.log("title : " + title);
     $.ajax({
       type: 'POST',
       url: '/boards',
@@ -153,7 +158,7 @@
       dataType: 'json',
       success: function (data) {
         alert("게시글 작성에 성공했습니다.");
-        location.replace("main");
+        location.replace("/main");
       },
       error: function (e) {
         alert("게시글 작성에 실패했습니다.");
@@ -166,7 +171,7 @@
     let images = getImageFileNames(htmlCode);
     let categoryID = document.getElementById("category-select").value;
     let title = document.getElementById("title").value;
-    let date = "2022-07-29";
+    let date = getNowDate();
     let tag = document.getElementById("tag-text").value.split(" ");
     let board_id = ${board_id};
     boardSubmit(htmlCode, images, allImage, categoryID, title, date, tag, type, board_id);
@@ -174,6 +179,7 @@
 
   function submitTest(){
     document.getElementById("preview-Page").innerHTML = editor.getHTML();
+    console.log(editor.getHTML());
     renderMathInElement(document.getElementById("preview-Page"), options);
   }
 

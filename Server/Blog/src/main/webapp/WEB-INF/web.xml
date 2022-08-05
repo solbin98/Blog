@@ -29,6 +29,7 @@
                 com.project.config.ControllerConfig
                 com.project.config.ServiceConfig
                 com.project.config.DBConfig
+                com.project.config.SocialConfig
             </param-value>
         </init-param>
 

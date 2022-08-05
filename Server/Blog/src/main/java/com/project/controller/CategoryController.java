@@ -1,9 +1,10 @@
 package com.project.controller;
 
-import com.example.blog.HelloServlet;
+
+
+import javax.servlet.http.HttpSession;
 import com.project.dto.BoardDto;
 import com.project.dto.BoardTagDto;
-import com.project.dto.CommentDto;
 import com.project.dto.TagDto;
 import com.project.service.*;
 import com.project.util.PagingVo;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.LocalDateTime.now;
+
 
 
 @Controller
@@ -34,7 +35,7 @@ public class CategoryController {
     private BoardTagService boardTagService;
 
     @RequestMapping("/main")
-    public String func(Model model){
+    public String func(Model model, HttpSession session){
         model.addAttribute("categories", categoryService.getAllCategory());
         return "category";
     }
@@ -47,6 +48,7 @@ public class CategoryController {
         PagingVo pagingVo = new PagingVo(nowPage, 10, total);
 
         List<BoardDto> boards = boardService.getBoardPaging(pagingVo, category_id);
+
         Map<String, List<TagDto>> tags = getTagMap(boards);
 
         model.addAttribute("tags", tags);
@@ -55,6 +57,14 @@ public class CategoryController {
         model.addAttribute("boards", boards);
         model.addAttribute("pagingVo", pagingVo);
         return "category";
+    }
+
+    @GetMapping(value = "category")
+    @ResponseBody
+    public Map<String,Object> getCategories(){
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("categories", categoryService.getAllCategory());
+        return ret;
     }
 
     public List<TagDto> getTags(int board_id){

@@ -1,14 +1,11 @@
 <!-- 사이드 메뉴바 -->
+
 <div id="page-wrapper">
-    <div id="sidebar-wrapper">
-        <ul class="sidebar-nav">
-            <h2 class="blog-title"> solbin98 </h2>
-            <a href="/board-write-page" methods="GET" class="category"> write board </a>
-            <c:forEach var="category" items="${categories}" varStatus="idx" >
-                <p class="category">
-                    <a href="/category/${category.category_id}/boards" class="a-color"> ${category.name} (${category.total})</a>
-                </p>
-            </c:forEach>
+    <div id="sidebar-wrapper" style="border-right: 0.2px solid lightgray;">
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <h1 class="blog-title"> Solbin98's blog </h1>
+            <a href="/board-write-page" methods="GET" class="category" id="write-board"> Write </a>
+
         </ul>
     </div>
 </div>

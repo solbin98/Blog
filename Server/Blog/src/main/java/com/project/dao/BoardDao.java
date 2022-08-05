@@ -1,6 +1,7 @@
 package com.project.dao;
 
 import com.project.dto.BoardDto;
+import com.project.dto.CategoryDto;
 import com.project.util.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -49,13 +50,16 @@ public class BoardDao {
         return ret;
     }
 
-    public List<BoardDto> selectPaging(PagingVo pagingVo, int category_id){
+    public List<BoardDto> selectPaging(PagingVo pagingVo, List<CategoryDto> family){
         int offset = (pagingVo.getNowPage()-1) * pagingVo.getPerPage();
         int limits = pagingVo.getPerPage();
-        List<BoardDto> ret = jdbcTemplate.query(
-                "select * from Board where category_id = ? order by board_id DESC limit ?, ? ",
-                boardDtoRowMapper,
-                category_id, offset, limits);
+        String sql = "select * from Board where ";
+        for(int i=0;i<family.size();i++){
+            sql += "category_id = " + family.get(i).getCategory_id() + " ";
+            if(i != family.size()-1) sql += " or ";
+        }
+        sql += "order by board_id DESC limit ?, ? ";
+        List<BoardDto> ret = jdbcTemplate.query(sql,boardDtoRowMapper, offset, limits);
         return ret;
     }
 

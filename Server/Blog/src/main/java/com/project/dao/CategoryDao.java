@@ -46,6 +46,11 @@ public class CategoryDao {
         return ret;
     }
 
+    public List<CategoryDto> selectByParentID(int parent_id){
+        List<CategoryDto> ret = jdbcTemplate.query("select * from Category where parent = ?", CategoryDtoRowMapper, parent_id);
+        return ret;
+    }
+
     public List<CategoryDto> deleteAll(){
         List<CategoryDto> ret = jdbcTemplate.query("delete * from Category", CategoryDtoRowMapper);
         return ret;

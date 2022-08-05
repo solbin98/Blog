@@ -1,11 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<script src="/resources/js/getNowDate.js"></script>
 <script>
     function commentSubmit(parent_id){
-        let today = new Date();
-        let year = today.getFullYear();
-        let month = ('0' + (today.getMonth() + 1)).slice(-2);
-        let day = ('0' + today.getDate()).slice(-2);
-        let dateString = year + '-' + month  + '-' + day;
+        let dateString = getNowDate();
+
         let writer = $("#comment-writer-name");
         let password = $("#comment-writer-password");
         let content = $("#comment-content");
@@ -70,7 +68,6 @@
         let id = document.getElementById("comment-writer-name-update").value;
         let password = document.getElementById("comment-writer-password-update").value;
         let contents = document.getElementById("comment-content-update").value;
-        console.log(contents);
         let headerParams ={ id : encodeURI(id), password : encodeURI(password), content : encodeURI(contents)};
 
         console.log(JSON.stringify(headerParams));
@@ -89,13 +86,13 @@
             }
         });
     }
+
     function loadComment(pageNumber){
         // 댓글 조회를 위한 코드
         $.ajax({
             type : "GET",
             url : "/boards/" + ${board.board_id} + "/comment?page=" + pageNumber,
             success : function(res){
-                document.getElementById("comment-count").scrollIntoView();
                 updatePagingVo(res.pagingVo);
                 loadComments(res.comments);
             },

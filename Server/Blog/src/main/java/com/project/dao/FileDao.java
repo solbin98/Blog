@@ -37,7 +37,12 @@ public class FileDao {
         return ret;
     }
 
-    public List<FileDto> select(int board_id){
+    public List<FileDto> select(int file_id){
+        List<FileDto> ret = jdbcTemplate.query("select * from File where file_id = " + file_id, FileDtoRowMapper);
+        return ret;
+    }
+
+    public List<FileDto> selectByBoardID(int board_id){
         List<FileDto> ret = jdbcTemplate.query("select * from File where board_id = " + board_id, FileDtoRowMapper);
         return ret;
     }
