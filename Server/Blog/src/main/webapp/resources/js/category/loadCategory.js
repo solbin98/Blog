@@ -1,9 +1,7 @@
 
 function makeJsonTypeCategoryTree(categoryListArray){
     let tree = {};
-    for(let i=0;i<categoryListArray.length;i++){
-        console.log(categoryListArray[i]);
-    }
+
     for(let i=0;i<categoryListArray.length;i++){
         let curElem = categoryListArray[i];
         let parent = curElem.parent;
@@ -16,6 +14,7 @@ function makeJsonTypeCategoryTree(categoryListArray){
         let parent = curElem.parent;
         if(parent != 0) tree[parent].push(i);
     }
+
     return tree;
 }
 
@@ -57,7 +56,6 @@ function addCategoryToNavBar(categoryListArray, tree, categoryUl){
         }
     }
 }
-
 
 function getCategories(){
     let categories = null;

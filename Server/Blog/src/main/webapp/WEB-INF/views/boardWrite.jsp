@@ -7,11 +7,12 @@
 <head>
   <link rel="stylesheet" href="/resources/write-board.css">
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-  <!-- katex start -->
+  <script src="/resources/js/general/functions.js"></script>
+  <script src="/resources/js/board/boardRequest.js"></script>
+  <!-- katex 추가하는 부분 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous"/>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
-  <script src="/resources/js/getNowDate.js"></script>
   <script>
     let options = {
       delimiters: [
@@ -24,7 +25,7 @@
       //renderMathInElement(document.body, options);
     });
   </script>
-  <!-- katex end -->
+  <!-- katex 끝 -->
 </head>
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <script src="//code.jquery.com/jquery.min.js"></script>
@@ -60,10 +61,8 @@
 
 
 <script>
-  let board_id = 0;
+  let boardID = ${board_id};
   let allImage = [];
-  let type = "${type}";
-  document.getElementById("submit-button").onclick = function () { submit(type)};
 
   const Editor = toastui.Editor;
   const editor = new Editor({
@@ -85,101 +84,24 @@
     },
     hooks: {
       addImageBlobHook: (file, callback) => {
-        // blob : Java Script 파일 객체
-        //console.log(blob);
-        console.log(file);
         const formData = new FormData();
         formData.append("image", file);
-        let url = '/images/';
-        $.ajax({
-          type: 'POST',
-          url: '/boards/image',
-          data: formData,
-          dataType: 'json',
-          processData: false,
-          contentType: false,
-          cache: false,
-          timeout: 6000000,
-          success: function(data) {
-            allImage.push(data.name);
-            url += data.name;
-            callback(url, '이미지 추가');
-          },
-          error: function(e) {
-            callback('image_load_fail', '사진 대체 텍스트 입력');
-          }
-        });
+        sendImage(formData, callback);
       }
     }
   });
 
-  let string
+  let type = "${type}";
   if(type == "update") {
+    // 자바 코드를 통해 content를 불러오게 되면, 출력의 결과로 역슬래시가 2개에서 1개로 압축된 포함된 문자열에 str에 저장됨.
+    // 역 슬래시가 한 개인 상태로 에디터로 넘어가면 역 슬래시가 아예 사라지는 문제 발생, 따라서 역슬래시 \\ 를 \\\\ 로 치환
     let str = `${fn:replace(content, '\\', '\\\\')}`;
-    console.log(str + " 기본 ");
     editor.setHTML(str);
   }
-
-
-  function getImageFileNames(htmlCode){
-      let names = [];
-      let tmpDoc = document.createElement('div');
-      tmpDoc.innerHTML = htmlCode;
-      let images = tmpDoc.getElementsByTagName("img");
-      for(let i=0;i<images.length;i++){
-        let src = images[i].src;
-        let imageFileName = "";
-        for(let i=src.length-1;i>=0;i--) {
-          if(src[i] == "/") break;
-          imageFileName += src[i];
-        }
-        imageFileName = imageFileName.split('').reverse().join('');
-        names.push(imageFileName);
-      }
-      return names;
-  }
-
-  function boardSubmit(htmlCode, images, allImage, category, title, date, tag, type, board_id) {
-    console.log("title : " + title);
-    $.ajax({
-      type: 'POST',
-      url: '/boards',
-      data: {
-        "image": images,
-        "allImage": allImage,
-        "content": htmlCode,
-        "categoryID": category,
-        "title": title,
-        "date": date,
-        "tag": tag,
-        "type" : type,
-        "board_id" : board_id
-      },
-      dataType: 'json',
-      success: function (data) {
-        alert("게시글 작성에 성공했습니다.");
-        location.replace("/main");
-      },
-      error: function (e) {
-        alert("게시글 작성에 실패했습니다.");
-      }
-    });
-  }
-
-  function submit(){
-    let htmlCode = editor.getHTML();
-    let images = getImageFileNames(htmlCode);
-    let categoryID = document.getElementById("category-select").value;
-    let title = document.getElementById("title").value;
-    let date = getNowDate();
-    let tag = document.getElementById("tag-text").value.split(" ");
-    let board_id = ${board_id};
-    boardSubmit(htmlCode, images, allImage, categoryID, title, date, tag, type, board_id);
-  }
+  document.getElementById("submit-button").onclick = function () { submit(type)};
 
   function submitTest(){
     document.getElementById("preview-Page").innerHTML = editor.getHTML();
-    console.log(editor.getHTML());
     renderMathInElement(document.getElementById("preview-Page"), options);
   }
 

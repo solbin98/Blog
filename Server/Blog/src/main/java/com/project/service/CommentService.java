@@ -20,6 +20,7 @@ public class CommentService {
     }
 
     public int getTotal(int board_id) { return commentDao.selectCountByBoardId(board_id);}
+    public int getLastCommentID() { return commentDao.selectLastCommentID(); }
     public List<CommentDto> getAllComment(){ return commentDao.selectAll();}
     public List<CommentDto> getCommentByBoardId(int board_id) { return commentDao.select(board_id); }
     public int checkCommentWriterInfo(CommentWriterDto commentWriterInfo, int comment_id) { return commentDao.selectWriterInfo(commentWriterInfo, comment_id);}
@@ -28,6 +29,7 @@ public class CommentService {
         return commentDao.selectPaging(pagingVo, board_id); }
     public void addComment(CommentDto commentDto) { commentDao.insert(commentDto);}
     public void updateComment(CommentDto commentDto) { commentDao.update(commentDto); }
+    public void updateCommentOnlyParent(int comment_id) { commentDao.updateParent(comment_id); }
     public void deleteComment(int comment_id) { commentDao.delete(comment_id); }
     public void deleteByBoardID(int board_id) { commentDao.deleteByBoardID(board_id);}
 }

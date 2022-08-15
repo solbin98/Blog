@@ -8,12 +8,11 @@
     <link href="/resources/sidebar.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
     <script src="//code.jquery.com/jquery.min.js"></script>
-    <script src="/resources/js/createNavBar.js"></script>
+    <script src="/resources/js/category/loadCategory.js"></script>
     <!-- katex start -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous"/>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
-
     <script>
         let options = {
             delimiters: [
@@ -35,7 +34,7 @@
         <%@ include file="/resources/html/menuBar.html" %>
 
         <div class="content-side">
-            <div class="content-side-headline"> <h3> ${pagingVo.nowPage} 페이지 </h3> </div>
+            <div class="content-side-headline" id="content-side-headline"> <h3> ${pagingVo.nowPage} 페이지 </h3> </div>
 
             <c:forEach var="board" items="${boards}" varStatus="idx">
                 <div class="board-block" id = "board-content-${board.board_id}">

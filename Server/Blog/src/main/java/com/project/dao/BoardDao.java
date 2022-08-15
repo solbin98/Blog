@@ -59,7 +59,7 @@ public class BoardDao {
             if(i != family.size()-1) sql += " or ";
         }
         sql += "order by board_id DESC limit ?, ? ";
-        List<BoardDto> ret = jdbcTemplate.query(sql,boardDtoRowMapper, offset, limits);
+        List<BoardDto> ret = jdbcTemplate.query(sql, boardDtoRowMapper, offset, limits);
         return ret;
     }
 

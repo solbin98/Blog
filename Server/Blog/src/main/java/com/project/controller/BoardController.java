@@ -71,7 +71,7 @@ public class BoardController {
 
     @DeleteMapping(value="boards/{board_id}")
     @ResponseBody
-    public String deleteBoard(@PathVariable("board_id") int board_id){
+    public Map<String, Object> deleteBoard(@PathVariable("board_id") int board_id){
         commentService.deleteByBoardID(board_id);
         boardTagService.deleteBoardByBoardID(board_id);
         boardService.deleteBoard(board_id);
@@ -80,7 +80,9 @@ public class BoardController {
             String fileName = list.get(i).getName();
             fileService.updateBoardId(0, fileName);
         }
-        return "ok";
+        Map<String, Object> result = new HashMap<>();
+        result.put("resultCode", 1);
+        return result;
     }
 
     @PostMapping(value = "boards")

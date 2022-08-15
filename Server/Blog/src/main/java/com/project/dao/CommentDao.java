@@ -4,6 +4,7 @@ import com.project.dto.CommentDto;
 import com.project.util.CommentWriterDto;
 import com.project.util.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -45,6 +46,19 @@ public class CommentDao {
         return ret;
     }
 
+    public int selectLastCommentID(){
+        Integer ret;
+        try{
+            ret = jdbcTemplate.queryForObject("select comment_id from Comment ORDER BY comment_id DESC LIMIT 1", Integer.class);
+        }
+        catch(DataAccessException e) {
+            ret = 0;
+            System.out.println(e);
+        }
+        System.out.println(ret + " 결정 ");
+        return ret;
+    }
+
     public List<CommentDto> selectAll(){
         List<CommentDto> ret = jdbcTemplate.query("select * from Comment", CommentDtoRowMapper);
         return ret;
@@ -59,7 +73,7 @@ public class CommentDao {
         int offset = (pagingVo.getNowPage()-1) * pagingVo.getPerPage();
         int limits = pagingVo.getPerPage();
         List<CommentDto> ret = jdbcTemplate.query(
-                "select * from Comment where board_id = ? order by comment_id asc limit ?, ? ",
+                "select * from Comment where board_id = ? order by parent asc limit ?, ? ",
                 CommentDtoRowMapper,
                 board_id, offset, limits);;
         return ret;
@@ -92,6 +106,9 @@ public class CommentDao {
         );
     }
 
+    public void updateParent(int comment_id){
+        jdbcTemplate.update("update Comment set parent = ? where comment_id = ?", comment_id, comment_id);
+    }
     public void delete(int comment_id){
         jdbcTemplate.update("delete from Comment where comment_id = ?", comment_id);
     }

@@ -27,16 +27,18 @@ public class CommentController {
 
     @ResponseBody
     @PostMapping(value="boards/{board_id}/comment")
-    public Map<String, Object> commentWrite(@PathVariable("board_id") int board_id, CommentDto commentdto){
+    public Map<String, Object> commentWrite(@PathVariable("board_id") int board_id,
+                                            @RequestParam(value = "page", required = false) int nowPage,
+                                            CommentDto commentdto){
         commentService.addComment(commentdto);
+        if(commentdto.getParent() == 0){
+            int lastCommentID = commentService.getLastCommentID();
+            commentService.updateCommentOnlyParent(lastCommentID);
+        }
         int total = commentService.getTotal(board_id);
-        PagingVo pagingVo = new PagingVo(1, 30, total);
-        pagingVo.setNowPage(pagingVo.getLastPage());
-
-        List<CommentDto> ret = commentService.getCommentPaging(pagingVo, board_id);
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("comments", ret);
-        result.put("pagingVo", pagingVo);
+        int lastPage = (int)Math.ceil(((double)total / (double)30));
+        if(nowPage == 0) nowPage = lastPage;
+        Map<String, Object> result = getCommentResultMapObject(nowPage, board_id);
         return result;
     }
 
@@ -44,14 +46,16 @@ public class CommentController {
     @DeleteMapping(value="boards/{board_id}/comment/{comment_id}*")
     public Map<String, Object> commentDelete(@PathVariable("comment_id") int comment_id,
                                              @PathVariable("board_id") int board_id,
+                                             @RequestParam("page") int nowPage,
                                              @RequestHeader("id") String id,
                                              @RequestHeader("password") String password){
 
         CommentWriterDto commentWriterInfo = new CommentWriterDto(URLDecoder.decode(id), URLDecoder.decode(password));
         int res = commentService.checkCommentWriterInfo(commentWriterInfo, comment_id);
         int numberOfChild = commentService.getCommentCountByParent(comment_id);
-        if(numberOfChild == 0 && res == 1) commentService.deleteComment(comment_id);
-        Map<String, Object> result = getCommentResultMapObject(1, board_id);
+        if(numberOfChild <= 1 && res == 1) commentService.deleteComment(comment_id);
+        else res = 0;
+        Map<String, Object> result = getCommentResultMapObject(nowPage, board_id);
         result.put("resultCode", res);
         return result;
     }

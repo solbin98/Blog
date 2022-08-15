@@ -210,10 +210,12 @@ a:hover { text-decoration-color:black }
 .content-side-headline{
     text-align: center;
     width: 90%;
-    background-color: lightgray;
     border: 0.2px solid lightgray;
-    margin: auto;
+    margin-left : 5%;
     padding: 15px;
+    color: white;
+    background: url("/resources/png/algorithm.png");
+    background-size:cover;
 }
 
 .board-headline{
@@ -323,6 +325,13 @@ a:hover { text-decoration-color:black }
     width: 20px;
     height: 20px;
     text-align: center;
+}
+
+.toastui-editor-ww-code-block{
+    background-color: #eee;
+    padding: 3%;
+    border-radius: 20px;
+    color: white;
 }
 
 
