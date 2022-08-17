@@ -2,14 +2,20 @@ package com.project.controller;
 
 import com.project.dto.*;
 import com.project.service.*;
-import com.project.util.BoardWriteInfoDto;
-import com.project.util.ImageDto;
-import com.project.util.PagingVo;
+import com.project.util.data.BoardWriteInfoDto;
+import com.project.util.data.ImageDto;
+import com.project.util.data.PagingVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -31,6 +37,7 @@ public class BoardController {
     @Autowired
     FileService fileService;
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @GetMapping(value = "boards/{board_id}*")
     public String getBoard (Model model, @PathVariable("board_id") int board_id, @RequestParam("category") int category){
@@ -87,21 +94,20 @@ public class BoardController {
 
     @PostMapping(value = "boards")
     @ResponseBody
-    public Map<String, Object> writeOrUpdateBoard(BoardWriteInfoDto boardWriteInfoDto) {
-        int boardID = boardWriteInfoDto.getBoard_id();
-        int categoryID = boardWriteInfoDto.getCategoryID();
-        String title = boardWriteInfoDto.getTitle();
-        String content = boardWriteInfoDto.getContent();
-        String date = boardWriteInfoDto.getDate();
+    public Object writeOrUpdateBoard(@Valid @ModelAttribute BoardWriteInfoDto boardWriteInfoDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return bindingResult.getAllErrors();
+        }
+
+        BoardDto boardDto = convertBoardWriteInfoDtoToBoardDto(boardWriteInfoDto);
         String type = boardWriteInfoDto.getType();
 
-        BoardDto boardDto = new BoardDto(boardID, categoryID, title, content, date, 0);
         if(type.equals("write")) boardService.addBoard(boardDto);
         else if(type.equals("update")) boardService.updateBoard(boardDto);
 
         int board_id = boardService.getLastBoardID();
         if(type.equals("update")) {
-            board_id = boardID;
+            board_id = boardWriteInfoDto.getBoard_id();
             boardTagService.deleteBoardByBoardID(board_id);
         }
 
@@ -159,4 +165,14 @@ public class BoardController {
         return tagString;
     }
 
+    public BoardDto convertBoardWriteInfoDtoToBoardDto(BoardWriteInfoDto boardWriteInfoDto){
+        int boardID = boardWriteInfoDto.getBoard_id();
+        int categoryID = boardWriteInfoDto.getCategoryID();
+        String title = boardWriteInfoDto.getTitle();
+        String content = boardWriteInfoDto.getContent();
+        String date = boardWriteInfoDto.getDate();
+
+        BoardDto boardDto = new BoardDto(boardID, categoryID, title, content, date, 0);
+        return boardDto;
+    }
 }

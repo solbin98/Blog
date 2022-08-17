@@ -8,12 +8,16 @@ function ajaxForm(type, url, data, header){
         async: false,
         success : function(res){
             resultCode = res.resultCode;
-            console.log("통신 성공!" + " result : " + resultCode);
-            updatePagingVo(res.pagingVo);
-            setComments(res.comments);
+            if(resultCode == 1){
+                updatePagingVo(res.pagingVo);
+                setComments(res.comments);
+            }
+            else {
+                alert(res.errorMessage);
+            }
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){
-            alert("서버와의 통신에 실패했습니다.")
+            alert("통신 에러");
         }
     });
     return resultCode;
@@ -52,12 +56,8 @@ function addComment(parent_id, comment_id){
 function deleteComment(comment_id, ids, pass, win){
     let url = "/boards/" + boardID + "/comment/" + comment_id + "?page=" + pagingVo.nowPage;
     let headers = { id : encodeURI(ids), password : encodeURI(pass) };
-    let resultCode = ajaxForm("DELETE", url, {}, headers)
-    if(resultCode == 1){
-        alert("댓글이 삭제 되었습니다.");
-        win.close();
-    }
-    else alert("비밀번호나 아이디가 잘못되었습니다.");
+    let resultCode = ajaxForm("DELETE", url, {}, headers);
+    if(resultCode == 1) win.close();
 }
 
 function updateComment(comment_id){
@@ -66,9 +66,7 @@ function updateComment(comment_id){
     let contents = document.getElementById("comment-content-update").value;
     let headerParams ={ id : encodeURI(id), password : encodeURI(password), content : encodeURI(contents)};
     let url = "/boards/" + boardID + "/comment/" + comment_id + "?page=" + pagingVo.nowPage;
-    let resultCode = ajaxForm("PUT", url, {}, headerParams);
-    if(resultCode == 1){ alert("댓글이 수정되었습니다."); }
-    else alert("비밀번호나 아이디가 잘못되었습니다.");
+    ajaxForm("PUT", url, {}, headerParams);
 }
 
 function loadComment(pageNumber){

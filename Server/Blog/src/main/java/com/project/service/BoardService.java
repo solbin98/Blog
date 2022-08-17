@@ -1,10 +1,9 @@
 package com.project.service;
 
 import com.project.dao.BoardDao;
-import com.project.dao.BoardTagDao;
 import com.project.dto.BoardDto;
 import com.project.dto.CategoryDto;
-import com.project.util.PagingVo;
+import com.project.util.data.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sql.DataSource;

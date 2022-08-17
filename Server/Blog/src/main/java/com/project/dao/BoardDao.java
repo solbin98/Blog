@@ -2,7 +2,7 @@ package com.project.dao;
 
 import com.project.dto.BoardDto;
 import com.project.dto.CategoryDto;
-import com.project.util.PagingVo;
+import com.project.util.data.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

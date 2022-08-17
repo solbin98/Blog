@@ -2,6 +2,7 @@ package com.project.dto;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,8 +12,11 @@ public class CommentDto {
     int board_id;
     int depth;
     int parent;
+    @NotEmpty(message = "아이디를 입력해주세요.")
     String writer;
+    @NotEmpty(message = "비밀번호를 입력해주세요.")
     String password;
+    @NotEmpty(message = "댓글 내용을 입력해주세요.")
     String content;
     String date;
 

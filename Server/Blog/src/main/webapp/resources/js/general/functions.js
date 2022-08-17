@@ -28,3 +28,10 @@ function getImageFileNamesStringFromHtmlCode(htmlCode){
     return names;
 }
 
+function getErrorMessage(errorMessage){
+    let message = "";
+    for(let i=0;i<errorMessage.length;i++){
+        message += errorMessage[i] + "\n";
+    }
+    return message;
+}

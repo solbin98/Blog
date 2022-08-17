@@ -1,4 +1,4 @@
-package com.project.util;
+package com.project.util.data;
 
 import org.springframework.web.multipart.MultipartFile;
 

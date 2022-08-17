@@ -59,7 +59,7 @@
   <p id="preview-Page"></p>
 </body>
 
-
+<!-- /resources/js/board.js 파일에 게시글 업로드 로직 존재 -->
 <script>
   let boardID = ${board_id};
   let allImage = [];

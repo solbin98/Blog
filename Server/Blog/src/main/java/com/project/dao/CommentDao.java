@@ -1,8 +1,8 @@
 package com.project.dao;
 
 import com.project.dto.CommentDto;
-import com.project.util.CommentWriterDto;
-import com.project.util.PagingVo;
+import com.project.util.data.CommentWriterDto;
+import com.project.util.data.PagingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

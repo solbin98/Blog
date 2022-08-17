@@ -2,8 +2,8 @@ package com.project.service;
 
 import com.project.dao.CommentDao;
 import com.project.dto.CommentDto;
-import com.project.util.CommentWriterDto;
-import com.project.util.PagingVo;
+import com.project.util.data.CommentWriterDto;
+import com.project.util.data.PagingVo;
 
 import javax.sql.DataSource;
 import java.util.List;

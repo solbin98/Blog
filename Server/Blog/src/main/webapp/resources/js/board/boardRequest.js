@@ -45,12 +45,14 @@ function submit(){
         url : "/boards",
         data : data,
         success : function(res){
+            console.log(res);
             if(res.resultCode) {
                 alert("게시글 작성에 성공했습니다.");
                 location.replace("/main");
             }
             else{
-                alert("게시글 작성에 실패했습니다.");
+                let errorMessage = res.errorMessage;
+                alert(errorMessage);
             }
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){

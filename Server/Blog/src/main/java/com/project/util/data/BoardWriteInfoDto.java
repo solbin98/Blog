@@ -1,7 +1,9 @@
-package com.project.util;
+package com.project.util.data;
 
 import com.project.dto.TagDto;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class BoardWriteInfoDto {
@@ -9,7 +11,9 @@ public class BoardWriteInfoDto {
     List<String> image;
     List<String> allImage;
     int board_id;
+    @NotEmpty(message = "본문 내용을 작성해주세요.")
     String content;
+    @NotEmpty(message = "게시글 제목을 작성해주세요.")
     String title;
     String date;
     String type;
