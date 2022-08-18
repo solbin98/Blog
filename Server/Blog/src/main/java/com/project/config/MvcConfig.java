@@ -1,5 +1,8 @@
 package com.project.config;
 
+import com.project.interceptor.LogInterceptor;
+import com.project.interceptor.LoginInterceptor;
+import org.aopalliance.intercept.Interceptor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +30,17 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
         registry.addResourceHandler("/images/**").addResourceLocations("file:///C:/springTest/");
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry){
+        registry.addInterceptor(new LogInterceptor())
+                .order(1)
+                .addPathPatterns("/**");
+
+        registry.addInterceptor(new LoginInterceptor())
+                .order(2)
+                .addPathPatterns("/boards/*", "/board-write-page", "/board-update-page/*");
     }
 
     @Bean

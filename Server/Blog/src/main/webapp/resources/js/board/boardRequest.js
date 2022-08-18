@@ -56,7 +56,7 @@ function submit(){
             }
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){
-            alert("카테고리 로딩 실패");
+            alert("통신 실패");
         }
     });
 }

@@ -15,6 +15,5 @@
 </body>
 <script>
     location.replace("${url}");
-
 </script>
 </html>

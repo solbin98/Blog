@@ -48,6 +48,7 @@ public class AdminLoginController {
         AccessGrant accessGrant = oauthOperations.exchangeForAccess(code , oAuth2Parameters.getRedirectUri(), null);
 
         String accessToken = accessGrant.getAccessToken();
+        String refreshToken = accessGrant.getRefreshToken();
         Long expireTime = accessGrant.getExpireTime();
 
         if (expireTime != null && expireTime < System.currentTimeMillis()) {
@@ -63,7 +64,6 @@ public class AdminLoginController {
         JSONObject jsonObject = (JSONObject) parser.parse(ret);
 
         if(jsonObject.get("email").equals("exode4@gmail.com")) session.setAttribute("admin", true);
-        else session.setAttribute("admin",false);
 
         model.addAttribute("categories", categoryService.getAllCategory());
         model.addAttribute("admin", session.getAttribute("admin"));
